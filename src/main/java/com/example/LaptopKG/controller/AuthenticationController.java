@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthenticationController {
+@CrossOrigin(origins = "*")
+public class AuthenticationController{
 
     private final UserService service;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @Valid @RequestBody CreateUserDto request
@@ -26,8 +26,6 @@ public class AuthenticationController {
         return ResponseEntity.ok(service.register(request));
     }
 
-
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthUserDto request

@@ -29,17 +29,18 @@ import java.util.Objects;
 @FieldDefaults(level = AccessLevel.PUBLIC)
 public class User extends BaseEntity implements UserDetails {
 
-    @Column(unique = true)
+    @Column(name = "username", unique = true)
     @NotBlank(message = "Name is mandatory")
     String username;
 
-    @Column(unique = true)
+    @Column(name = "email", unique = true)
     String email;
 
     @NotBlank(message = "Password is mandatory")
+    @Column(name = "pass")
     String password;
 
-
+    @Column(name = "address")
     String address;
 
     @Column(name = "phone_number")
@@ -58,12 +59,9 @@ public class User extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     Status status;
 
-
     @OneToOne
+    @JoinColumn(name = "avatar_id")
     Image avatar;
-
-
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

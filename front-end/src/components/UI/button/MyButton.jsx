@@ -1,10 +1,12 @@
 import React from 'react';
-import classes from './MyButton.module.css';
+
+import { Button } from "@material-tailwind/react";
+
 const MyButton = ({children, ...props}) => {
     return (
-        <button {...props} className={classes.myBtn}>
+        <Button {...props} className="">
             {children}
-        </button>
+        </Button>
     );
 };
 

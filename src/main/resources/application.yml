@@ -6,9 +6,10 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
 
 app:
   jwtSecret: 576D5A7133743677397A24432646294A404E635266556A586E32723575377821

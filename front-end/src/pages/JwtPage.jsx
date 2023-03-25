@@ -3,14 +3,12 @@ import {useLocalStorage} from "../hooks/useLocalStorage";
 
 const JwtPage = () => {
 
-    const [jwt, setJwt] = useLocalStorage("", 'jwt');
-
 
     return (
         <div>
-            <header>
-                <h4>${jwt}</h4>
-            </header>
+            <h1 className="text-3xl font-bold underline">
+            Hello world!
+            </h1>
         </div>
     );
 };

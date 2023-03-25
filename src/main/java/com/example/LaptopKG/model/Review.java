@@ -20,13 +20,17 @@ import java.time.LocalDateTime;
 public class Review extends BaseEntity {
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private LocalDateTime created;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updated;
 
+    @Column(name = "text")
     String text;
 
+    @Column(name = "score")
     int score;
 
     @ManyToOne

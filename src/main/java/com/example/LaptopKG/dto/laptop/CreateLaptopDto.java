@@ -19,6 +19,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateLaptopDto {
 
+    //todo: create mapper and replace entities with ids
+
     List<Hardware> model;
     String description;
     int price;

@@ -23,7 +23,10 @@ public class Favorites extends BaseEntity {
     @JoinColumn(name = "user_id")
     User user;
 
-    @OneToMany
+    @ManyToMany
+    @JoinTable(name = "laptop_favorites_item",
+            joinColumns = @JoinColumn(name="laptop_id"),
+            inverseJoinColumns = @JoinColumn(name = "favroites_id"))
     List<Laptop> laptops = new ArrayList<>();
 
 

@@ -43,7 +43,7 @@ public class Laptop extends BaseEntity {
     @Enumerated(EnumType.STRING)
     Category category;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "brand_id")
     Brand brand;
 

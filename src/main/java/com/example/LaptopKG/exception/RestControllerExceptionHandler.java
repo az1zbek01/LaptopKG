@@ -60,9 +60,8 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
     public ResponseEntity<Object> handleUserAlreadyExist(
             UserAlreadyExistException ex) {
 
-        List<String> details = new ArrayList<String>();
-        details.add(ex.getField());
-        details.add(ex.getMessage());
+        List<Map<String, String>> details = new ArrayList<>();
+        details.add(Map.of(ex.getField(), ex.getMessage()));
 
         ApiError err = new ApiError(
                 LocalDateTime.now(),
@@ -77,13 +76,13 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
     public ResponseEntity<Object> handleUsernameNotFound(
             UserAlreadyExistException ex) {
 
-        List<String> details = new ArrayList<String>();
+        List<String> details = new ArrayList<>();
         details.add(ex.getMessage());
 
         ApiError err = new ApiError(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST,
-                "Username already exists" ,
+                "user not found" ,
                 details);
 
         return ResponseEntityBuilder.build(err);
@@ -93,7 +92,7 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
     public ResponseEntity<Object> handleLaptopNotFound(
             LaptopNotFoundException ex) {
 
-        List<String> details = new ArrayList<String>();
+        List<String> details = new ArrayList<>();
         details.add(ex.getMessage());
 
         ApiError err = new ApiError(
