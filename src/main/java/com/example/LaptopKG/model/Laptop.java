@@ -23,7 +23,12 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Laptop extends BaseEntity {
 
-    @OneToMany
+    @ManyToMany
+    @JoinTable(
+            name = "laptop_hardware",
+            joinColumns = @JoinColumn(name = "laptop_id"),
+            inverseJoinColumns = @JoinColumn(name = "hardware_id")
+    )
     List<Hardware> model;
 
     String description;

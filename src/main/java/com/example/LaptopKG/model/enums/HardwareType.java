@@ -4,6 +4,8 @@ package com.example.LaptopKG.model.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.stream.Stream;
+
 @Getter
 @RequiredArgsConstructor
 public enum HardwareType{
@@ -20,5 +22,12 @@ public enum HardwareType{
     RESOLUTION("разрешение");
 
     private final String hardwareType;
+
+    public static HardwareType of(String hardwareType) {
+        return Stream.of(HardwareType.values())
+                .filter(p -> p.getHardwareType().equals(hardwareType))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
 
 }

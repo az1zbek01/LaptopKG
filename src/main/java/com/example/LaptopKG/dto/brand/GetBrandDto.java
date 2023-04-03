@@ -16,13 +16,8 @@ import lombok.experimental.FieldDefaults;
 public class GetBrandDto {
 
     Long id;
-    String name;
+    String brand;
 
-    public GetBrandDto brandToDto(Brand brand) {
-        return GetBrandDto.builder()
-                .id(brand.getId())
-                .name(brand.getBrand())
-                .build();
-    }
+
 
 }

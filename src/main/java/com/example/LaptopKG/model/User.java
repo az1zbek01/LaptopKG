@@ -26,7 +26,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PUBLIC)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "username", unique = true)

@@ -2,7 +2,10 @@ package com.example.LaptopKG.config;
 
 
 import com.example.LaptopKG.repository.UserRepository;
+import com.example.LaptopKG.util.*;
+
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ApplicationConfig {
 
     private final UserRepository repository;
+    private final MyMapper mapper;
+
 
     @Bean
     public UserDetailsService userDetailsService(){
@@ -42,5 +47,11 @@ public class ApplicationConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+
+    @Bean
+    public ModelMapper mapper() {
+        return mapper.getModelMapper();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.LaptopKG.dto.laptop;
 
+import com.example.LaptopKG.dto.hardware.GetHardwareDto;
 import com.example.LaptopKG.model.Brand;
 import com.example.LaptopKG.model.Hardware;
 import com.example.LaptopKG.model.enums.Category;
@@ -19,25 +20,13 @@ public class GetLaptopDto {
 
 
     Long id;
-    List<Hardware> model;
+    List<GetHardwareDto> model;
     String description;
     int price;
     int amount;
     int discount;
-    Brand brand;
-    Category category;
-
-    public GetLaptopDto laptopToDto(Laptop laptop) {
-        return GetLaptopDto.builder()
-                .id(laptop.getId())
-                .model(laptop.getModel())
-                .description(laptop.getDescription())
-                .price(laptop.getPrice())
-                .discount(laptop.getDiscount())
-                .amount(laptop.getAmount())
-                .brand(laptop.getBrand())
-                .category(laptop.getCategory())
-                .build();
-    }
+    String brand;
+    String category;
+    int guarantee;
 
 }

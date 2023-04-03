@@ -18,25 +18,15 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateLaptopDto {
 
-    List<Hardware> model;
+    //todo: add images
+    List<Long> modelIds;
     String description;
     int price;
     int amount;
     int discount;
-    Brand brand;
-    Status status;
-    Category category;
+    Long brandId;
+    String category;
+    int guarantee;
+    String status;
 
-    public Laptop toLaptop() {
-        return Laptop.builder()
-                .model(this.getModel())
-                .description(this.getDescription())
-                .price(this.getPrice())
-                .amount(this.getAmount())
-                .discount(this.getDiscount())
-                .brand(this.getBrand())
-                .category(this.getCategory())
-                .status(this.getStatus())
-                .build();
-    }
 }

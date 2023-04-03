@@ -23,6 +23,7 @@ public class LaptopController {
 
     @GetMapping
     public ResponseEntity<List<GetLaptopDto>> getAll(){
+
         return ResponseEntity.ok(laptopService.getLaptops());
     }
 

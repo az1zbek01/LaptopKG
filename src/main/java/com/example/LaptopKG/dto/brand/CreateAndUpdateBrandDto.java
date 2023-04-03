@@ -1,7 +1,6 @@
 package com.example.LaptopKG.dto.brand;
 
 
-import com.example.LaptopKG.model.Brand;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,13 +10,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateBrandDto {
+public class CreateAndUpdateBrandDto {
 
     String brand;
 
-    public Brand toBrand() {
-        return Brand.builder()
-                .brand(this.getBrand())
-                .build();
-    }
+
 }

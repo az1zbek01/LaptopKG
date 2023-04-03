@@ -19,26 +19,15 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateLaptopDto {
 
-    //todo: create mapper and replace entities with ids
 
-    List<Hardware> model;
+    //todo: add images
+    List<Long> modelIds;
     String description;
     int price;
     int amount;
     int discount;
-    Brand brand;
-    Category category;
+    Long brandId;
+    String category;
+    int guarantee;
 
-    public Laptop toLaptop() {
-        return Laptop.builder()
-                .model(this.getModel())
-                .description(this.getDescription())
-                .price(this.getPrice())
-                .amount(this.getAmount())
-                .brand(this.getBrand())
-                .discount(this.getDiscount())
-                .category(this.getCategory())
-                .status(Status.ACTIVE)
-                .build();
-    }
 }
