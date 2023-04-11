@@ -18,28 +18,16 @@ public class HardwareController {
 
     private final HardwareService hardwareService;
 
-    @PostMapping("/create")
+    @PostMapping("")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> createHardware(@RequestBody @Valid CreateHardwareDto createHardwareDto){
         return ResponseEntity.ok(hardwareService.createHardware(createHardwareDto));
     }
 
-    @GetMapping("/")
+    @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getAllHardware(){
         return ResponseEntity.ok(hardwareService.getAllHardware());
-    }
-
-
-    //fixME delete this shit not fix
-    @PostMapping("/createWithName")
-    public ResponseEntity<?> createWithNameTest(@RequestBody @Valid HardwareNameDto hardwareNameDto){
-        System.out.println(HardwareType.DIAGONAL.getHardwareType());
-        CreateHardwareDto hardwareDto = CreateHardwareDto.builder()
-                .name(hardwareNameDto.getName())
-                .hardwareType(HardwareType.DIAGONAL.getHardwareType())
-                .build();
-        return ResponseEntity.ok(hardwareService.createHardware(hardwareDto));
     }
 
 }

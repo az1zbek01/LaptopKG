@@ -22,6 +22,9 @@ public class LaptopNotifications extends BaseEntity {
     @JoinColumn(name = "user_id")
     User user;
 
-    @OneToMany
+    @ManyToMany
+    @JoinTable(name = "laptop_notification_item",
+            joinColumns = @JoinColumn(name="laptop_id"),
+            inverseJoinColumns = @JoinColumn(name = "notification_id"))
     List<Laptop> laptops;
 }

@@ -21,12 +21,12 @@ public class HardwareService {
     private final HardwareRepository hardwareRepository;
     private final ModelMapper mapper;
 
-    public String createHardware(CreateHardwareDto createHardwareDto) {
+    public GetHardwareDto createHardware(CreateHardwareDto createHardwareDto) {
 
         Hardware hardware = mapper.map(createHardwareDto, Hardware.class);
 
         hardwareRepository.save(hardware);
-        return "Hardware successfully created";
+        return mapper.map(hardware, GetHardwareDto.class);
     }
 
     public List<GetHardwareDto> getAllHardware() {

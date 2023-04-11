@@ -38,13 +38,13 @@ public class LaptopController {
         return ResponseEntity.ok(laptopService.createLaptop(createLaptopDto));
     }
 
-    @PostMapping("/{id}/update")
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateLaptop(@PathVariable Long id, @RequestBody UpdateLaptopDto updateLaptopDto){
         return ResponseEntity.ok(laptopService.updateLaptop(id, updateLaptopDto));
     }
 
-    @PostMapping("/{id}/delete")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteLaptop(@PathVariable Long id){
         return ResponseEntity.ok(laptopService.deleteLaptop(id));

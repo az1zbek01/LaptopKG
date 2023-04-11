@@ -26,7 +26,7 @@ public class Favorites extends BaseEntity {
     @ManyToMany
     @JoinTable(name = "laptop_favorites_item",
             joinColumns = @JoinColumn(name="laptop_id"),
-            inverseJoinColumns = @JoinColumn(name = "favroites_id"))
+            inverseJoinColumns = @JoinColumn(name = "favorites_id"))
     List<Laptop> laptops = new ArrayList<>();
 
 

@@ -9,13 +9,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/brand")
+@RequestMapping("/api/brands")
 @RequiredArgsConstructor
 public class BrandController {
 
     private final BrandService brandService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<?> getAllBrands(){
         return ResponseEntity.ok(brandService.getAll());
     }
@@ -31,7 +31,7 @@ public class BrandController {
         return ResponseEntity.ok(brandService.createBrand(createBrandDto));
     }
 
-    @PostMapping("/{id}/update")
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateBrand(@PathVariable Long id, @RequestBody CreateAndUpdateBrandDto updateBrandDto){
         return ResponseEntity.ok(brandService.updateBrand(id, updateBrandDto));

@@ -21,13 +21,13 @@ public class BrandService {
     private final ModelMapper mapper;
 
 
-    public String createBrand(CreateAndUpdateBrandDto createAndUpdateBrandDto) {
+    public GetBrandDto createBrand(CreateAndUpdateBrandDto createAndUpdateBrandDto) {
 
         Brand brand = mapper.map(createAndUpdateBrandDto, Brand.class);
         System.out.println(brand.getBrand());
         brandRepository.save(brand);
 
-        return "Brand successfully created";
+        return mapper.map(brand, GetBrandDto.class);
     }
 
     public List<GetBrandDto> getAll() {
@@ -47,6 +47,7 @@ public class BrandService {
         Brand brand = brandRepository.findById(id).orElseThrow();
         brand.setBrand(updateBrandDto.getBrand());
         brandRepository.save(brand);
+
         return mapper.map(brand, GetBrandDto.class);
     }
 }
