@@ -45,7 +45,6 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "phone_number")
     String phoneNumber;
-    //TODO check is working
 
     @Column(name = "first_name")
     String firstName;
@@ -62,6 +61,12 @@ public class User extends BaseEntity implements UserDetails {
     @OneToOne
     @JoinColumn(name = "avatar_id")
     Image avatar;
+
+    @ManyToMany
+    @JoinTable(name = "laptop_notifications",
+            joinColumns = @JoinColumn(name="user_id"),
+            inverseJoinColumns = @JoinColumn(name = "laptop_id"))
+    List<Laptop> laptops;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

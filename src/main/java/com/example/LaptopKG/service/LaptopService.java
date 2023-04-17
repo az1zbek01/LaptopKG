@@ -50,7 +50,7 @@ public class LaptopService {
                 .orElseThrow( () ->
                 new LaptopNotFoundException("Ноутбук с id " + id + " не найден"));
 
-        List<GetHardwareDto> hardwareList = laptop.getModel().stream()
+        List<GetHardwareDto> hardwareList = laptop.getHardwareList().stream()
                 .map(hardware -> mapper.map(hardware, GetHardwareDto.class)).toList();;
 
         GetLaptopDto getLaptopDto = GetLaptopDto.builder()
@@ -120,7 +120,7 @@ public class LaptopService {
         }
 
         Laptop laptop = Laptop.builder()
-                .model(hardwareList)
+                .hardwareList(hardwareList)
                 .description(createLaptopDto.getDescription())
                 .price(createLaptopDto.getPrice())
                 .amount(createLaptopDto.getAmount())
@@ -158,7 +158,7 @@ public class LaptopService {
         }
 
         Laptop laptop = Laptop.builder()
-                .model(hardwareList)
+                .hardwareList(hardwareList)
                 .description(updateLaptopDto.getDescription())
                 .price(updateLaptopDto.getPrice())
                 .amount(updateLaptopDto.getAmount())

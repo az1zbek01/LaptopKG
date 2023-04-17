@@ -10,12 +10,10 @@ import lombok.Setter;
 @Setter
 @MappedSuperclass
 public class BaseEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    //TODO check identity, auto
-//
+
 //    @CreationTimestamp
 //    private LocalDateTime created;
 //    //    later
