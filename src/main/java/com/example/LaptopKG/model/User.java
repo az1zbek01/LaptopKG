@@ -58,9 +58,7 @@ public class User extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     Status status;
 
-    @OneToOne
-    @JoinColumn(name = "avatar_id")
-    Image avatar;
+    String imageUrl;
 
     @ManyToMany
     @JoinTable(name = "laptop_notifications",

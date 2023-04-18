@@ -57,9 +57,5 @@ public class Laptop extends BaseEntity {
     @JoinColumn(name = "brand_id")
     Brand brand;
 
-//    @OneToMany
-//    List<Image> images = new ArrayList<>();
-    //TODO продумать фотографии
-
-
+    private String imageUrl;
 }

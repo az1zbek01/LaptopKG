@@ -20,7 +20,7 @@ public class GetUserDto {
     String phoneNumber;
     String firstName;
     String lastName;
-    Image avatar;
+    String imageUrl;
 
     public GetUserDto getUserDto(User user){
         return GetUserDto.builder()
@@ -30,7 +30,7 @@ public class GetUserDto {
                 .phoneNumber(user.getPhoneNumber())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                .avatar(user.getAvatar())
+                .imageUrl(user.getImageUrl())
                 .build();
     }
 
