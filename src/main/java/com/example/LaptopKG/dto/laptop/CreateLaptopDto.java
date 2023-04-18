@@ -19,9 +19,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateLaptopDto {
 
-
-    //todo: add images
-    List<Long> modelIds;
+//    List<Long> modelIds;
     String description;
     int price;
     int amount;

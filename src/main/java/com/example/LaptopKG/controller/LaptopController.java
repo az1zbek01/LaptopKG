@@ -22,9 +22,9 @@ public class LaptopController {
     private final LaptopService laptopService;
 
     @GetMapping
-    public ResponseEntity<List<GetLaptopDto>> getAll(){
+    public List<GetLaptopDto> getAll(){
 
-        return ResponseEntity.ok(laptopService.getLaptops());
+        return laptopService.getLaptops();
     }
 
     @GetMapping("/{id}")

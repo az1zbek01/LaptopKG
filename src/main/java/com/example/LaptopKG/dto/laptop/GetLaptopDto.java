@@ -9,6 +9,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -20,7 +21,6 @@ public class GetLaptopDto {
 
 
     Long id;
-    List<GetHardwareDto> model;
     String description;
     int price;
     int amount;
@@ -28,5 +28,21 @@ public class GetLaptopDto {
     String brand;
     String category;
     int guarantee;
+
+    public static GetLaptopDto toGetLaptopDto(Laptop laptop){
+        return GetLaptopDto.builder()
+                .description(laptop.getDescription())
+                .price(laptop.getPrice())
+                .amount(laptop.getAmount())
+                .discount(laptop.getDiscount())
+                .brand(laptop.getBrand().getBrand())
+                .category(laptop.getCategory().getCategory())
+                .guarantee(laptop.getGuarantee().getGuarantee())
+                .build();
+    }
+
+    public static List<GetLaptopDto> toGetLaptopDto(List<Laptop> laptops){
+        return laptops.stream().map(GetLaptopDto::toGetLaptopDto).collect(Collectors.toList());
+    }
 
 }

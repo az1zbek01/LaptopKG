@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.LaptopKG.dto.laptop.GetLaptopDto.toGetLaptopDto;
+
 @Service
 @RequiredArgsConstructor
 public class LaptopService {
@@ -37,10 +39,7 @@ public class LaptopService {
 
     public List<GetLaptopDto> getLaptops() {
 
-        return null;
-//        return laptopRepository.findAll().stream().filter(l -> l.getStatus().equals(Status.ACTIVE)).map(laptop ->
-//            new GetLaptopDto().laptopToDto(laptop)
-//        ).collect(Collectors.toList());
+        return toGetLaptopDto(laptopRepository.findAll());
 
     }
 
@@ -61,7 +60,6 @@ public class LaptopService {
                 .description(laptop.getDescription())
                 .guarantee(laptop.getGuarantee().getGuarantee())
                 .discount(laptop.getDiscount())
-                .model(hardwareList)
                 .price(laptop.getPrice())
                 .build();
 
@@ -103,24 +101,23 @@ public class LaptopService {
 //        Laptop laptop = mapper.map(createLaptopDto, Laptop.class);
 
         // todo: probably repository has better function to find list of hardware by their ids
-        List<Hardware> hardwareList = new ArrayList<>();
-        List<HardwareType> hardwareTypes = new ArrayList<>(Arrays.stream(HardwareType.values()).toList());
-        for (int i = 0; i < createLaptopDto.getModelIds().size(); i++) {
-            Hardware hardware = hardwareRepository.findById(createLaptopDto.getModelIds().get(i)).orElse(null);
-
-            if(hardware == null){
-                continue;
-            }
-            if (hardwareTypes.contains(hardware.getHardwareType())) {
-                hardwareList.add(hardware);
-                hardwareTypes.remove(hardware.getHardwareType());
-            }else {
-                throw new IllegalArgumentException();
-            }
-        }
+//        List<Hardware> hardwareList = new ArrayList<>();
+//        List<HardwareType> hardwareTypes = new ArrayList<>(Arrays.stream(HardwareType.values()).toList());
+//        for (int i = 0; i < createLaptopDto.getModelIds().size(); i++) {
+//            Hardware hardware = hardwareRepository.findById(createLaptopDto.getModelIds().get(i)).orElse(null);
+//
+//            if(hardware == null){
+//                continue;
+//            }
+//            if (hardwareTypes.contains(hardware.getHardwareType())) {
+//                hardwareList.add(hardware);
+//                hardwareTypes.remove(hardware.getHardwareType());
+//            }else {
+//                throw new IllegalArgumentException();
+//            }
+//        }
 
         Laptop laptop = Laptop.builder()
-                .hardwareList(hardwareList)
                 .description(createLaptopDto.getDescription())
                 .price(createLaptopDto.getPrice())
                 .amount(createLaptopDto.getAmount())
