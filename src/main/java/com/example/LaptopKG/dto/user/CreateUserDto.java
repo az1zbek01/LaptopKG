@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateUserDto {
 
-    @Size(min = 8, max = 30, message = "Must be of 8 - 30 characters")
+    @Size(min = 4, max = 30, message = "Must be of 4 - 30 characters")
     String username;
 
     @Size(min = 1, max = 30, message = "Must be of 1 - 30 characters")

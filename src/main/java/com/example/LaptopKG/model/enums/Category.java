@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 @Getter
 public enum Category {
 
-    BASE("Базовые"), GAMING("Игровые"), ULTRA_BOOK("Ультрабуки");
+    BASE("Базовые"), GAMING("Игровые"), ULTRABOOK("Ультрабуки");
 
     private final String category;
 

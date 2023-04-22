@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum PaymentType {
 
-    WITH_CARD("Картой"), WITH_CASH("Наличкой");
+    WITH_CARD("Картой"), WITH_CASH("Наличными");
     private final String paymentType;
 
 }

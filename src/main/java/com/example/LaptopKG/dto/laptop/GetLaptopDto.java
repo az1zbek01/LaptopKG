@@ -18,8 +18,6 @@ import java.util.stream.Collectors;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GetLaptopDto {
-
-
     Long id;
     String description;
     int price;
@@ -31,6 +29,7 @@ public class GetLaptopDto {
 
     public static GetLaptopDto toGetLaptopDto(Laptop laptop){
         return GetLaptopDto.builder()
+                .id(laptop.getId())
                 .description(laptop.getDescription())
                 .price(laptop.getPrice())
                 .amount(laptop.getAmount())
