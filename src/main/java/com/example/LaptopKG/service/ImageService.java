@@ -4,7 +4,10 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.LaptopKG.exception.FileEmptyException;
 import com.example.LaptopKG.model.Laptop;
+import com.example.LaptopKG.model.User;
 import com.example.LaptopKG.repository.LaptopRepository;
+import com.example.LaptopKG.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
@@ -18,21 +21,27 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ImageService {
     private final LaptopRepository laptopRepository;
+    private final UserRepository userRepository;
 
     public ResponseEntity<String> saveForLaptop(Long laptopId, MultipartFile file) throws IOException {
-        if(laptopRepository.existsById(laptopId)){
-            Laptop laptop = laptopRepository.findById(laptopId).get();
-            laptop.setImageUrl(saveImage(file));
-            laptopRepository.save(laptop);
-            return ResponseEntity.ok("Image was saved");
-        }else{
+        if(!laptopRepository.existsById(laptopId)) {
             return ResponseEntity.badRequest().body("Laptop with id " + laptopId + " wasn't found");
         }
+
+        Laptop laptop = laptopRepository.findById(laptopId).get();
+        laptop.setImageUrl(saveImage(file));
+        laptopRepository.save(laptop);
+        return ResponseEntity.ok("Image was saved");
     }
 
+    public ResponseEntity<String> saveForUser(User user, MultipartFile file) throws IOException {
+            user.setImageUrl(saveImage(file));
+            userRepository.save(user);
+            return ResponseEntity.ok("Image was saved");
+    }
 
     public String saveImage(MultipartFile file) throws IOException {
         if (file.isEmpty()) {

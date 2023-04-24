@@ -59,6 +59,7 @@ public class User extends BaseEntity implements UserDetails {
     Status status;
 
     String imageUrl;
+    String token;
 
     @ManyToMany
     @JoinTable(name = "laptop_notifications",
@@ -103,7 +104,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return status != Status.DELETED;
+        return status == Status.ACTIVE;
     }
 
     @Override

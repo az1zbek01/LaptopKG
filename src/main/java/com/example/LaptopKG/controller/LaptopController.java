@@ -8,7 +8,11 @@ import com.example.LaptopKG.service.LaptopService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +23,7 @@ import java.util.List;
 //TODO: Create getall getById //create update delete
 @RestController
 @RequestMapping("/api/laptops")
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Tag(
     name = "Контроллер для работы с ноутбуками",
     description = "В этом контроллеры есть возможности добавления, получения, обновления и удаления ноутбуков"
@@ -34,6 +38,14 @@ public class LaptopController {
     )
     public List<GetLaptopDto> getAll(){
         return laptopService.getLaptops();
+    }
+
+    @GetMapping("/byPages")
+    @Operation(
+            summary = "Получение всех ноутбуков с пагинацией"
+    )
+    public Page<GetLaptopDto> getAllWithPagination(@PageableDefault Pageable pageable){
+        return laptopService.getLaptops(pageable);
     }
 
     @GetMapping("/{id}")
