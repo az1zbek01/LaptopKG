@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 @Getter
 public enum Status {
 
-    ACTIVE("активный"), DELETED("удаленный");
+    ACTIVE("активный"), NOT_ACTIVATED("неактивированный"), DELETED("удаленный");
     private final String status;
 
 
