@@ -7,13 +7,15 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-@Service("emailService")
+@Service
 @AllArgsConstructor
 public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
 
     @Override
+    @Async
     public void sendEmail(SimpleMailMessage email) {
         mailSender.send(email);
     }
+
 }
