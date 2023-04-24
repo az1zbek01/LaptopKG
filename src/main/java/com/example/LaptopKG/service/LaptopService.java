@@ -1,6 +1,5 @@
 package com.example.LaptopKG.service;
 
-import com.example.LaptopKG.dto.hardware.CreateHardwareDto;
 import com.example.LaptopKG.dto.hardware.GetHardwareDto;
 import com.example.LaptopKG.dto.laptop.CreateLaptopDto;
 import com.example.LaptopKG.dto.laptop.GetLaptopDto;
@@ -18,13 +17,14 @@ import com.example.LaptopKG.repository.LaptopRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.modelmapper.*;
-import org.modelmapper.spi.MappingContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.example.LaptopKG.dto.laptop.GetLaptopDto.toGetLaptopDto;
 
@@ -38,9 +38,12 @@ public class LaptopService {
     private final HardwareRepository hardwareRepository;
 
     public List<GetLaptopDto> getLaptops() {
-
         return toGetLaptopDto(laptopRepository.findAll());
+    }
 
+    public Page<GetLaptopDto> getLaptops(Pageable pageable) {
+        List<GetLaptopDto> laptops = toGetLaptopDto(laptopRepository.findAll());
+        return new PageImpl<>(laptops, pageable, laptops.size());
     }
 
     public GetLaptopDto getLaptopById(Long id) {
@@ -127,9 +130,6 @@ public class LaptopService {
                 .guarantee(Guarantee.of(createLaptopDto.getGuarantee()))
                 .status(Status.ACTIVE)
                 .build();
-
-
-
 
         laptopRepository.save(laptop);
         return "Laptop is successfully created";
