@@ -3,6 +3,7 @@ package com.example.LaptopKG.service;
 
 import com.example.LaptopKG.dto.brand.CreateAndUpdateBrandDto;
 import com.example.LaptopKG.dto.brand.GetBrandDto;
+import com.example.LaptopKG.exception.AlreadyExistException;
 import com.example.LaptopKG.exception.NotFoundException;
 import com.example.LaptopKG.model.Brand;
 import com.example.LaptopKG.model.enums.Status;
@@ -23,6 +24,10 @@ public class BrandService {
 
     // Brand creating
     public GetBrandDto createBrand(CreateAndUpdateBrandDto createAndUpdateBrandDto) {
+        if(brandRepository.existsByName(createAndUpdateBrandDto.getName())){
+            throw new AlreadyExistException("Brand with name " +
+                    createAndUpdateBrandDto.getName() + " already exists");
+        }
         // We are mapping from DTO to Entity
         Brand brand = mapper.map(createAndUpdateBrandDto, Brand.class);
 
@@ -47,6 +52,8 @@ public class BrandService {
     public GetBrandDto getById(Long id) {
         // Map from entity to dto and return brand
         return brandRepository.findById(id)
+                // Check if brand is not deleted
+                .filter(brand -> brand.getStatus() == Status.ACTIVE)
                 .map(brand -> mapper.map(brand, GetBrandDto.class))
                 // throw exception if brand doesn't exist
                 .orElseThrow(() -> new NotFoundException("Бренд с айди " + id + " не найден"));
@@ -56,10 +63,12 @@ public class BrandService {
     public GetBrandDto updateBrand(Long id, CreateAndUpdateBrandDto updateBrandDto) {
         // Get brand from DB or throw exception if it doesn't exist
         Brand brand = brandRepository.findById(id)
+                // Check if brand is not deleted
+                .filter(b -> b.getStatus() == Status.ACTIVE)
                 .orElseThrow(() -> new NotFoundException("Бренд с айди " + id + " не найден"));
 
         // Update brand
-        brand.setBrand(updateBrandDto.getBrand());
+        brand.setName(updateBrandDto.getName());
 
         // Save updated brand
         brandRepository.save(brand);
@@ -72,6 +81,8 @@ public class BrandService {
     public ResponseEntity<String> deleteBrand(Long id){
         // Get brand from DB or throw exception if it doesn't exist
         Brand brand = brandRepository.findById(id)
+                // Check if brand is not deleted
+                .filter(b -> b.getStatus() == Status.ACTIVE)
                 .orElseThrow(() -> new NotFoundException("Бренд с айди " + id + " не найден"));
 
         // Mark brand as deleted and save it

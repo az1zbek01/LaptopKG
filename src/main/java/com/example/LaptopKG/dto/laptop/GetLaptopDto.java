@@ -38,7 +38,7 @@ public class GetLaptopDto {
                 .price(laptop.getPrice())
                 .amount(laptop.getAmount())
                 .discount(laptop.getDiscount())
-                .brand(laptop.getBrand().getBrand())
+                .brand(laptop.getBrand().getName())
                 .category(laptop.getCategory().getCategory())
                 .guarantee(laptop.getGuarantee().getGuarantee())
                 .hardwareList(toGetHardwareDto(laptop.getHardwareList()))

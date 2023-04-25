@@ -105,8 +105,23 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
 
         ApiError error = new ApiError(
                 LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST,
+                HttpStatus.NOT_FOUND,
                 "Not found",
+                details
+        );
+
+        return ResponseEntityBuilder.build(error);
+    }
+
+    @ExceptionHandler(AlreadyExistException.class)
+    public ResponseEntity<Object> handleAlreadyExist(AlreadyExistException e){
+        List<String> details = new ArrayList<>();
+        details.add(e.getMessage());
+
+        ApiError error = new ApiError(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST,
+                "Already exists",
                 details
         );
 

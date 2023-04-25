@@ -19,7 +19,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Brand extends BaseEntity {
-    String brand;
+    String name;
 
     @Enumerated(EnumType.STRING)
     Status status;
