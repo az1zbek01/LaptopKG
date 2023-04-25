@@ -1,5 +1,4 @@
-package com.example.LaptopKG.dto.brand;
-
+package com.example.LaptopKG.dto.review;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -10,8 +9,11 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateAndUpdateBrandDto {
-    String brand;
+public class AddAndUpdateReviewDto {
+    String text;
 
+    int score;
+
+    long laptopId;
 
 }

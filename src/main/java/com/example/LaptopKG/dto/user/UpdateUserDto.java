@@ -1,7 +1,6 @@
 package com.example.LaptopKG.dto.user;
 
 
-import com.example.LaptopKG.model.Image;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,6 +17,5 @@ public class UpdateUserDto {
     String phoneNumber;
     String firstName;
     String lastName;
-    Image avatar;
 
 }

@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 @Getter
 @RequiredArgsConstructor
 public enum HardwareType{
-
     PROCESSOR("процессор"),
     DIAGONAL("диагональ"),
     OPERATING_SYSTEM("операционная система"),

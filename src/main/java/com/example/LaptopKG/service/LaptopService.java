@@ -4,7 +4,9 @@ import com.example.LaptopKG.dto.hardware.GetHardwareDto;
 import com.example.LaptopKG.dto.laptop.CreateLaptopDto;
 import com.example.LaptopKG.dto.laptop.GetLaptopDto;
 import com.example.LaptopKG.dto.laptop.UpdateLaptopDto;
+import com.example.LaptopKG.dto.review.GetReviewDto;
 import com.example.LaptopKG.exception.LaptopNotFoundException;
+import com.example.LaptopKG.exception.NotFoundException;
 import com.example.LaptopKG.model.Hardware;
 import com.example.LaptopKG.model.Laptop;
 import com.example.LaptopKG.model.enums.Category;
@@ -14,169 +16,160 @@ import com.example.LaptopKG.model.enums.Status;
 import com.example.LaptopKG.repository.BrandRepository;
 import com.example.LaptopKG.repository.HardwareRepository;
 import com.example.LaptopKG.repository.LaptopRepository;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import org.modelmapper.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.example.LaptopKG.dto.laptop.GetLaptopDto.toGetLaptopDto;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class LaptopService {
-
     private final LaptopRepository laptopRepository;
-    private final ModelMapper mapper;
     private final BrandRepository brandRepository;
     private final HardwareRepository hardwareRepository;
 
+    // Get all active laptops
     public List<GetLaptopDto> getLaptops() {
-        return toGetLaptopDto(laptopRepository.findAll());
+        // Return laptops mapping from entity to dto
+        return toGetLaptopDto(
+            // find all laptops from db
+            laptopRepository.findAll()
+                .stream()
+                // filter laptops by status
+                .filter(laptop -> laptop.getStatus() == Status.ACTIVE)
+                .collect(Collectors.toList())
+        );
     }
 
+    // Get all active laptops with pagination
     public Page<GetLaptopDto> getLaptops(Pageable pageable) {
-        List<GetLaptopDto> laptops = toGetLaptopDto(laptopRepository.findAll());
+        // Find all laptops from DB, map from entity to dto
+        List<GetLaptopDto> laptops = toGetLaptopDto(
+            // find all laptops from db
+            laptopRepository.findAll()
+                .stream()
+                // filter laptops by status
+                .filter(laptop -> laptop.getStatus() == Status.ACTIVE)
+                .collect(Collectors.toList())
+        );
+
+        // Return laptops as page with pagination
         return new PageImpl<>(laptops, pageable, laptops.size());
     }
 
+    // Get laptop by id
     public GetLaptopDto getLaptopById(Long id) {
+        // Find laptop in DB by id
         Laptop laptop = laptopRepository.findById(id)
-                .filter(l -> l.getStatus().equals(Status.ACTIVE))
-                .orElseThrow( () ->
-                new LaptopNotFoundException("Ноутбук с id " + id + " не найден"));
+                // check if laptop is active
+                .filter(l -> l.getStatus() == (Status.ACTIVE))
+                // throw exception if laptop doesn't exist
+                .orElseThrow(
+                        () -> new LaptopNotFoundException("Ноутбук с id " + id + " не найден")
+                );
 
-        List<GetHardwareDto> hardwareList = laptop.getHardwareList().stream()
-                .map(hardware -> mapper.map(hardware, GetHardwareDto.class)).toList();;
-
-        GetLaptopDto getLaptopDto = GetLaptopDto.builder()
-                .id(laptop.getId())
-                .amount(laptop.getAmount())
-                .brand(laptop.getBrand().getBrand())
-                .category(laptop.getCategory().getCategory())
-                .description(laptop.getDescription())
-                .guarantee(laptop.getGuarantee().getGuarantee())
-                .discount(laptop.getDiscount())
-                .price(laptop.getPrice())
-                .build();
-
-
-        return getLaptopDto;
+        return toGetLaptopDto(laptop);
     }
 
-    public String createLaptop(CreateLaptopDto createLaptopDto) {
-
-
-//        Converter<CreateLaptopDto, Laptop> createLaptopDtoLaptopConverter = new Converter<CreateLaptopDto, Laptop>() {
-//            @Override
-//            public Laptop convert(MappingContext<CreateLaptopDto, Laptop> ctx) {
-//                CreateLaptopDto dto = ctx.getSource();
-//
-//
-//                List<Hardware> hardwareList = new ArrayList<>();
-//                for (int i = 0; i < dto.getModelIds().size(); i++) {
-//                    hardwareList.add(hardwareRepository.findById(dto.getModelIds().get(i)).orElse(null));
-//                }
-//
-//                return Laptop.builder()
-//                .model(hardwareList)
-//                .description(dto.getDescription())
-//                .price(dto.getPrice())
-//                .amount(dto.getAmount())
-//                .brand(brandRepository.findById(dto.getBrandId()).orElse(null))
-//                .discount(dto.getDiscount())
-//                .category(Category.valueOf(dto.getCategory()))
-//                .status(Status.ACTIVE)
-//                .build();
-//            }
-//        };
-//
-//        mapper.typeMap(CreateLaptopDto.class, Laptop.class)
-//                .addMappings(mapper -> mapper.using(createLaptopDtoLaptopConverter)
-//                        .map(CreateLaptopDto::getModelIds, Laptop::setModel)
-//                        );
-//        Laptop laptop = mapper.map(createLaptopDto, Laptop.class);
-
-        // todo: probably repository has better function to find list of hardware by their ids
-//        List<Hardware> hardwareList = new ArrayList<>();
-//        List<HardwareType> hardwareTypes = new ArrayList<>(Arrays.stream(HardwareType.values()).toList());
-//        for (int i = 0; i < createLaptopDto.getModelIds().size(); i++) {
-//            Hardware hardware = hardwareRepository.findById(createLaptopDto.getModelIds().get(i)).orElse(null);
-//
-//            if(hardware == null){
-//                continue;
-//            }
-//            if (hardwareTypes.contains(hardware.getHardwareType())) {
-//                hardwareList.add(hardware);
-//                hardwareTypes.remove(hardware.getHardwareType());
-//            }else {
-//                throw new IllegalArgumentException();
-//            }
-//        }
-
+    // Laptop creation
+    public GetLaptopDto createLaptop(CreateLaptopDto createLaptopDto) {
+        // Get list of hardware by ids
+        Set<Hardware> hardwareSet = new HashSet<>();
+        for (long id: createLaptopDto.getHardwareIds()) {
+            hardwareSet.add(hardwareRepository.findById(id)
+                    // throw exception if hardware doesn't exist
+                    .orElseThrow(() -> new NotFoundException("Железо с айди " + id + " не было найдено"))
+            );
+        }
+        // Map from dto to entity
         Laptop laptop = Laptop.builder()
+                .hardwareList(new ArrayList<>(hardwareSet))
                 .description(createLaptopDto.getDescription())
                 .price(createLaptopDto.getPrice())
                 .amount(createLaptopDto.getAmount())
-                .brand(brandRepository.findById(createLaptopDto.getBrandId()).orElse(null))
+                .brand(brandRepository.findById(createLaptopDto.getBrandId())
+                        // throw exception if brand doesn't exist
+                        .orElseThrow(
+                            () -> new NotFoundException("Brand with id " + createLaptopDto.getBrandId() + " wasn't found")
+                        )
+                )
                 .discount(createLaptopDto.getDiscount())
                 .category(Category.of(createLaptopDto.getCategory()))
                 .guarantee(Guarantee.of(createLaptopDto.getGuarantee()))
                 .status(Status.ACTIVE)
                 .build();
 
+        // Save new laptop and return laptop mapping it to dto
         laptopRepository.save(laptop);
-        return "Laptop is successfully created";
+        return toGetLaptopDto(laptop);
     }
 
-    public String updateLaptop(Long id, UpdateLaptopDto updateLaptopDto) {
+    // Laptop updating
+    public ResponseEntity<String> updateLaptop(Long id, UpdateLaptopDto updateLaptopDto) {
 
-        // todo: optimize using mapper
-        List<Hardware> hardwareList = new ArrayList<>();
-        List<HardwareType> hardwareTypes = new ArrayList<>(Arrays.stream(HardwareType.values()).toList());
-        for (int i = 0; i < updateLaptopDto.getModelIds().size(); i++) {
-            Hardware hardware = hardwareRepository.findById(updateLaptopDto.getModelIds().get(i)).orElse(null);
-
-            if(hardware == null){
-                continue;
-            }
-            if (hardwareTypes.contains(hardware.getHardwareType())) {
-                hardwareList.add(hardware);
-                hardwareTypes.remove(hardware.getHardwareType());
-            }else {
-                throw new IllegalArgumentException();
-            }
+        // Check if laptop exists by id
+        if(!laptopRepository.existsById(id)){
+            throw new LaptopNotFoundException("Laptop with id " + id + " wasn't found");
         }
 
+        // Get list of hardware by ids
+        Set<Hardware> hardwareSet = new HashSet<>();
+        for (long hardId: updateLaptopDto.getHardwareIds()) {
+            hardwareSet.add(hardwareRepository.findById(hardId)
+                    // throw exception if hardware doesn't exist
+                    .orElseThrow(() -> new NotFoundException("Железо с айди " + hardId + " не было найдено"))
+            );
+        }
+
+        // Map from dto to entity
         Laptop laptop = Laptop.builder()
-                .hardwareList(hardwareList)
+                .hardwareList(new ArrayList<>(hardwareSet))
                 .description(updateLaptopDto.getDescription())
                 .price(updateLaptopDto.getPrice())
                 .amount(updateLaptopDto.getAmount())
-                .brand(brandRepository.findById(updateLaptopDto.getBrandId()).orElse(null))
+                .brand(brandRepository.findById(updateLaptopDto.getBrandId())
+                        // throw exception if brand doesn't exist
+                        .orElseThrow(
+                                () -> new NotFoundException("Brand with id " + updateLaptopDto.getBrandId() + " wasn't found")
+                        )
+                )
                 .discount(updateLaptopDto.getDiscount())
                 .category(Category.of(updateLaptopDto.getCategory()))
                 .guarantee(Guarantee.of(updateLaptopDto.getGuarantee()))
                 .status(Status.of(updateLaptopDto.getStatus()))
                 .build();
+
+        // Save updated laptop and return laptop mapping it to dto
         laptop.setId(id);
         laptopRepository.save(laptop);
 
-        return "Laptop is successfully updated";
+        // Return status 200 and message
+        return ResponseEntity.ok("Laptop was successfully updated");
     }
 
-    public String deleteLaptop(Long id) {
-        Laptop laptop = laptopRepository.findById(id).filter(l -> l.getStatus().equals(Status.ACTIVE)).orElseThrow(
-                () -> new LaptopNotFoundException("Ноутбук с id " + id + " не найден"));
+    // Laptop deleting
+    public ResponseEntity<String> deleteLaptop(Long id) {
+        // Find laptop by id and check if it is active
+        Laptop laptop = laptopRepository.findById(id).filter(l -> l.getStatus() == Status.ACTIVE)
+                // throw exception if laptop wasn't found or is not active
+                .orElseThrow(
+                    () -> new LaptopNotFoundException("Ноутбук с id " + id + " не найден")
+                );
+        // Mark laptop as deleted and save it
         laptop.setStatus(Status.DELETED);
         laptopRepository.save(laptop);
 
-        return "Laptop is successfully deleted";
+        // Return status 200 and message
+        return ResponseEntity.ok("Laptop was successfully deleted");
     }
 }

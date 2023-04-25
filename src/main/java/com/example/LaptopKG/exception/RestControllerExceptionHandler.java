@@ -36,12 +36,6 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
             WebRequest request) {
         List<Map<String, String>> details;
 
-//        Map<String, String> errors = new HashMap<>();
-//        ex.getBindingResult().getAllErrors().forEach((error) -> {
-//            String fieldName = ((FieldError) error).getField();
-//            String errorMessage = error.getDefaultMessage();
-//            errors.put(fieldName, errorMessage);
-//        });
         details = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -104,6 +98,19 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
         return ResponseEntityBuilder.build(err);
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Object> handleNotFound(NotFoundException e){
+        List<String> details = new ArrayList<>();
+        details.add(e.getMessage());
 
+        ApiError error = new ApiError(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST,
+                "Not found",
+                details
+        );
+
+        return ResponseEntityBuilder.build(error);
+    }
 
 }

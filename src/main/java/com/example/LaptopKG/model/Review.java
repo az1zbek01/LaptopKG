@@ -14,18 +14,19 @@ import java.time.LocalDateTime;
 @Table(name = "review")
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
+@AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Review extends BaseEntity {
 
     @CreationTimestamp
     @Column(name = "created_at")
-    private LocalDateTime created;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    private LocalDateTime updated;
+    private LocalDateTime updatedAt;
 
     @Column(name = "text")
     String text;
@@ -40,6 +41,4 @@ public class Review extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;
-
-
 }

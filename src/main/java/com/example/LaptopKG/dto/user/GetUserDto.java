@@ -1,6 +1,5 @@
 package com.example.LaptopKG.dto.user;
 
-import com.example.LaptopKG.model.Image;
 import com.example.LaptopKG.model.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -12,8 +11,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GetUserDto {
-
-
     String username;
     String email;
     String address;
@@ -22,7 +19,7 @@ public class GetUserDto {
     String lastName;
     String imageUrl;
 
-    public GetUserDto getUserDto(User user){
+    public static GetUserDto getUserDto(User user){
         return GetUserDto.builder()
                 .username(user.getRealUsername())
                 .email(user.getEmail())

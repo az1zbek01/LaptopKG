@@ -2,6 +2,7 @@ package com.example.LaptopKG.controller;
 
 
 import com.example.LaptopKG.dto.brand.CreateAndUpdateBrandDto;
+import com.example.LaptopKG.dto.brand.GetBrandDto;
 import com.example.LaptopKG.service.BrandService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -11,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/brands")
 @RequiredArgsConstructor
@@ -19,23 +22,22 @@ import org.springframework.web.bind.annotation.*;
     description = "В этом контроллеры есть возможности добавления, получения и обновления брендов"
 )
 public class BrandController {
-
     private final BrandService brandService;
 
-    @GetMapping("")
+    @GetMapping()
     @Operation(
             summary = "Получение всех брендов"
     )
-    public ResponseEntity<?> getAllBrands(){
-        return ResponseEntity.ok(brandService.getAll());
+    public List<GetBrandDto> getAllBrands(){
+        return brandService.getAll();
     }
 
     @GetMapping("/{id}")
     @Operation(
             summary = "Получение бренда по айди"
     )
-    public ResponseEntity<?> getBrandById(@PathVariable Long id){
-        return ResponseEntity.ok(brandService.getById(id));
+    public GetBrandDto getBrandById(@PathVariable Long id){
+        return brandService.getById(id);
     }
 
     @PostMapping("/create")
@@ -44,8 +46,8 @@ public class BrandController {
     @Operation(
             summary = "Добавление бренда"
     )
-    public ResponseEntity<?> createBrand(@RequestBody CreateAndUpdateBrandDto createBrandDto){
-        return ResponseEntity.ok(brandService.createBrand(createBrandDto));
+    public GetBrandDto createBrand(@RequestBody CreateAndUpdateBrandDto createBrandDto){
+        return brandService.createBrand(createBrandDto);
     }
 
     @PutMapping("/{id}")
@@ -54,7 +56,17 @@ public class BrandController {
     @Operation(
             summary = "Обновление бренда"
     )
-    public ResponseEntity<?> updateBrand(@PathVariable Long id, @RequestBody CreateAndUpdateBrandDto updateBrandDto){
-        return ResponseEntity.ok(brandService.updateBrand(id, updateBrandDto));
+    public GetBrandDto updateBrand(@PathVariable Long id, @RequestBody CreateAndUpdateBrandDto updateBrandDto){
+        return brandService.updateBrand(id, updateBrandDto);
+    }
+
+    @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+            summary = "Удаление бренда"
+    )
+    public ResponseEntity<String> deleteBrand(@PathVariable Long id){
+        return brandService.deleteBrand(id);
     }
 }

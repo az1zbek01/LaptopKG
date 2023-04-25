@@ -22,7 +22,7 @@ public class UserController {
     private final UserService userService;
 
     @SecurityRequirement(name = "JWT")
-    @GetMapping("/getUser")
+    @GetMapping("/myInfo")
     public ResponseEntity<GetUserDto> getUserDtoResponseEntity(@AuthenticationPrincipal User user){
         return ResponseEntity.ok(new GetUserDto().getUserDto(user));
     }

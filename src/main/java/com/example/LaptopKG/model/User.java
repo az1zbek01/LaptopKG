@@ -22,34 +22,25 @@ import java.util.Objects;
 @Table(name = "_user")
 @Getter
 @Setter
-@ToString
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User extends BaseEntity implements UserDetails {
-
     @Column(name = "username", unique = true)
-    @NotBlank(message = "Name is mandatory")
     String username;
 
     @Column(name = "email", unique = true)
     String email;
 
-    @NotBlank(message = "Password is mandatory")
-    @Column(name = "pass")
     String password;
 
-    @Column(name = "address")
     String address;
 
-    @Column(name = "phone_number")
     String phoneNumber;
 
-    @Column(name = "first_name")
     String firstName;
 
-    @Column(name = "last_name")
     String lastName;
 
     @Enumerated(EnumType.STRING)
@@ -59,13 +50,8 @@ public class User extends BaseEntity implements UserDetails {
     Status status;
 
     String imageUrl;
-    String token;
 
-    @ManyToMany
-    @JoinTable(name = "laptop_notifications",
-            joinColumns = @JoinColumn(name="user_id"),
-            inverseJoinColumns = @JoinColumn(name = "laptop_id"))
-    List<Laptop> laptops;
+    String token;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
