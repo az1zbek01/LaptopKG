@@ -25,7 +25,7 @@ public class HardwareController {
 
     private final HardwareService hardwareService;
 
-    @PostMapping("")
+    @PostMapping()
     @SecurityRequirement(name = "JWT")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(
@@ -36,8 +36,8 @@ public class HardwareController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(
             summary = "Получение всего железа"
     )

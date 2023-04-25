@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class TestingController {
 
-
     @GetMapping("/getUser")
     @SecurityRequirement(name = "JWT")
     @PreAuthorize("hasRole('ROLE_USER')")

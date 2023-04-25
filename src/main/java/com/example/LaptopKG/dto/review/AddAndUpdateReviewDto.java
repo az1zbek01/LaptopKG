@@ -1,8 +1,7 @@
-package com.example.LaptopKG.dto.hardware;
+package com.example.LaptopKG.dto.review;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
 
 @Getter
 @Setter
@@ -10,8 +9,11 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateHardwareDto {
-    String name;
+public class AddAndUpdateReviewDto {
+    String text;
 
-    String hardwareType;
+    int score;
+
+    long laptopId;
+
 }

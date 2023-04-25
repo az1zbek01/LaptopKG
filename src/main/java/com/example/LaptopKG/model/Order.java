@@ -18,8 +18,9 @@ import java.util.List;
 @Table(name = "_order")
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
+@AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Order extends BaseEntity {
 
@@ -40,11 +41,9 @@ public class Order extends BaseEntity {
     List<Laptop> laptops;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "delivery_type")
     DeliveryType deliveryType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_type")
     PaymentType paymentType;
 
     @Enumerated(EnumType.STRING)

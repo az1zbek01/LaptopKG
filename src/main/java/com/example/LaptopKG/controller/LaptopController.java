@@ -4,12 +4,13 @@ package com.example.LaptopKG.controller;
 import com.example.LaptopKG.dto.laptop.CreateLaptopDto;
 import com.example.LaptopKG.dto.laptop.GetLaptopDto;
 import com.example.LaptopKG.dto.laptop.UpdateLaptopDto;
+import com.example.LaptopKG.dto.review.GetReviewDto;
 import com.example.LaptopKG.service.LaptopService;
+import com.example.LaptopKG.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-//TODO: Create getall getById //create update delete
 @RestController
 @RequestMapping("/api/laptops")
 @AllArgsConstructor
@@ -29,8 +29,8 @@ import java.util.List;
     description = "В этом контроллеры есть возможности добавления, получения, обновления и удаления ноутбуков"
 )
 public class LaptopController {
-
     private final LaptopService laptopService;
+    private final ReviewService reviewService;
 
     @GetMapping
     @Operation(
@@ -52,8 +52,16 @@ public class LaptopController {
     @Operation(
             summary = "Получение ноутбука по айди"
     )
-    public ResponseEntity<GetLaptopDto> getById(@PathVariable Long id){
-        return ResponseEntity.ok(laptopService.getLaptopById(id));
+    public GetLaptopDto getById(@PathVariable Long id){
+        return laptopService.getLaptopById(id);
+    }
+
+    @GetMapping("/{id}/reviews")
+    @Operation(
+            summary = "Получение всех отзывов на ноутбук"
+    )
+    public List<GetReviewDto> getReviewsByLaptopId(@PathVariable long id){
+        return reviewService.getReviewsByLaptopId(id);
     }
 
     @PostMapping("/create")
@@ -62,8 +70,8 @@ public class LaptopController {
     @Operation(
             summary = "Добавление ноутбука"
     )
-    public ResponseEntity<?> createLaptop(@RequestBody CreateLaptopDto createLaptopDto){
-        return ResponseEntity.ok(laptopService.createLaptop(createLaptopDto));
+    public GetLaptopDto createLaptop(@RequestBody CreateLaptopDto createLaptopDto){
+        return laptopService.createLaptop(createLaptopDto);
     }
 
     @PutMapping("/{id}")
@@ -72,8 +80,9 @@ public class LaptopController {
     @Operation(
             summary = "Обновление ноутбука"
     )
-    public ResponseEntity<?> updateLaptop(@PathVariable Long id, @RequestBody UpdateLaptopDto updateLaptopDto){
-        return ResponseEntity.ok(laptopService.updateLaptop(id, updateLaptopDto));
+    public ResponseEntity<String> updateLaptop(@PathVariable Long id,
+                                          @RequestBody UpdateLaptopDto updateLaptopDto){
+        return laptopService.updateLaptop(id, updateLaptopDto);
     }
 
     @DeleteMapping("/{id}")
@@ -82,8 +91,8 @@ public class LaptopController {
     @Operation(
             summary = "Удаление ноутбука"
     )
-    public ResponseEntity<?> deleteLaptop(@PathVariable Long id){
-        return ResponseEntity.ok(laptopService.deleteLaptop(id));
+    public ResponseEntity<String> deleteLaptop(@PathVariable Long id){
+        return laptopService.deleteLaptop(id);
     }
 
 }

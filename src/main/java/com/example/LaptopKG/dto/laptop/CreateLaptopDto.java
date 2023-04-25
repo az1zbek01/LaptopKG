@@ -18,8 +18,6 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateLaptopDto {
-
-//    List<Long> modelIds;
     String description;
     int price;
     int amount;
@@ -27,5 +25,6 @@ public class CreateLaptopDto {
     Long brandId;
     String category;
     int guarantee;
+    List<Long> hardwareIds;
 
 }

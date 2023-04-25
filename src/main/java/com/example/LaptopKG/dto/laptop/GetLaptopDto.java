@@ -11,6 +11,9 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.LaptopKG.dto.hardware.GetHardwareDto.toGetHardwareDto;
+
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -26,6 +29,7 @@ public class GetLaptopDto {
     String brand;
     String category;
     int guarantee;
+    List<GetHardwareDto> hardwareList;
 
     public static GetLaptopDto toGetLaptopDto(Laptop laptop){
         return GetLaptopDto.builder()
@@ -34,9 +38,10 @@ public class GetLaptopDto {
                 .price(laptop.getPrice())
                 .amount(laptop.getAmount())
                 .discount(laptop.getDiscount())
-                .brand(laptop.getBrand().getBrand())
+                .brand(laptop.getBrand().getName())
                 .category(laptop.getCategory().getCategory())
                 .guarantee(laptop.getGuarantee().getGuarantee())
+                .hardwareList(toGetHardwareDto(laptop.getHardwareList()))
                 .build();
     }
 

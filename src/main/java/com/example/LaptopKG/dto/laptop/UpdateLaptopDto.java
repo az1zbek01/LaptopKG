@@ -17,9 +17,6 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateLaptopDto {
-
-    //todo: add images
-    List<Long> modelIds;
     String description;
     int price;
     int amount;
@@ -28,5 +25,6 @@ public class UpdateLaptopDto {
     String category;
     int guarantee;
     String status;
+    List<Long> hardwareIds;
 
 }

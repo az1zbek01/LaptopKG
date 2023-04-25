@@ -16,7 +16,7 @@ import lombok.experimental.FieldDefaults;
 public class GetBrandDto {
 
     Long id;
-    String brand;
+    String name;
 
 
 
