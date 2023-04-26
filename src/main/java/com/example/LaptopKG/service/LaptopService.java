@@ -1,12 +1,15 @@
 package com.example.LaptopKG.service;
 
+import com.example.LaptopKG.dto.brand.GetBrandDto;
 import com.example.LaptopKG.dto.hardware.GetHardwareDto;
 import com.example.LaptopKG.dto.laptop.CreateLaptopDto;
 import com.example.LaptopKG.dto.laptop.GetLaptopDto;
 import com.example.LaptopKG.dto.laptop.UpdateLaptopDto;
 import com.example.LaptopKG.dto.review.GetReviewDto;
+import com.example.LaptopKG.exception.AlreadyExistException;
 import com.example.LaptopKG.exception.LaptopNotFoundException;
 import com.example.LaptopKG.exception.NotFoundException;
+import com.example.LaptopKG.model.Brand;
 import com.example.LaptopKG.model.Hardware;
 import com.example.LaptopKG.model.Laptop;
 import com.example.LaptopKG.model.enums.Category;
@@ -81,6 +84,16 @@ public class LaptopService {
         return toGetLaptopDto(laptop);
     }
 
+    // Getting all deleted laptops
+    public List<GetLaptopDto> getAllDeletedLaptops() {
+        // Find all deleted laptops, mapping them from Entity to DTO and return them
+        return toGetLaptopDto(laptopRepository.findAll()
+                .stream()
+                .filter(brand -> brand.getStatus() == Status.DELETED)
+                .collect(Collectors.toList())
+        );
+    }
+
     // Laptop creation
     public GetLaptopDto createLaptop(CreateLaptopDto createLaptopDto) {
         // Get list of hardware by ids
@@ -115,7 +128,7 @@ public class LaptopService {
     }
 
     // Laptop updating
-    public ResponseEntity<String> updateLaptop(Long id, UpdateLaptopDto updateLaptopDto) {
+    public GetLaptopDto updateLaptop(Long id, UpdateLaptopDto updateLaptopDto) {
 
         // Check if laptop exists by id
         if(!laptopRepository.existsById(id)){
@@ -153,8 +166,24 @@ public class LaptopService {
         laptop.setId(id);
         laptopRepository.save(laptop);
 
-        // Return status 200 and message
-        return ResponseEntity.ok("Laptop was successfully updated");
+        return toGetLaptopDto(laptop);
+    }
+
+    // Restore deleted laptop
+    public GetLaptopDto restoreLaptopById(long id){
+        // Find brand by id or throw exception if already active or doesn't exist in DB
+        Laptop laptop = laptopRepository.findById(id)
+                .filter(b -> b.getStatus() == Status.DELETED)
+                .orElseThrow(
+                        () -> new AlreadyExistException("Laptop with id " + id + " already active")
+                );
+
+        // Make laptop active and save it
+        laptop.setStatus(Status.ACTIVE);
+        laptopRepository.save(laptop);
+
+        // Return restored laptop
+        return toGetLaptopDto(laptop);
     }
 
     // Laptop deleting

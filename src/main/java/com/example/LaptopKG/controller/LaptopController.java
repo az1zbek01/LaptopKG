@@ -64,6 +64,16 @@ public class LaptopController {
         return reviewService.getReviewsByLaptopId(id);
     }
 
+    @GetMapping("/deleted")
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+            summary = "Получение всех удаленных ноутбуков"
+    )
+    public List<GetLaptopDto> getAllDeletedLaptops(){
+        return laptopService.getAllDeletedLaptops();
+    }
+
     @PostMapping("/create")
     @SecurityRequirement(name = "JWT")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -78,11 +88,21 @@ public class LaptopController {
     @SecurityRequirement(name = "JWT")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(
-            summary = "Обновление ноутбука"
+            summary = "Обновление ноутбука по айди"
     )
-    public ResponseEntity<String> updateLaptop(@PathVariable Long id,
+    public GetLaptopDto updateLaptop(@PathVariable Long id,
                                           @RequestBody UpdateLaptopDto updateLaptopDto){
         return laptopService.updateLaptop(id, updateLaptopDto);
+    }
+
+    @PutMapping("/restore/{id}")
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+            summary = "Восстановление ноутбука по айди"
+    )
+    public GetLaptopDto restoreLaptopById(@PathVariable Long id){
+        return laptopService.restoreLaptopById(id);
     }
 
     @DeleteMapping("/{id}")
