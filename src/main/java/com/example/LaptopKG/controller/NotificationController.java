@@ -38,8 +38,9 @@ public class NotificationController {
     @Operation(
             summary = "Получение уведомления по айди"
     )
-    public GetNotificationDto getNotificationById(@PathVariable long id){
-        return notificationService.getNotificationById(id);
+    public GetNotificationDto getNotificationById(@PathVariable long id,
+                                                  @AuthenticationPrincipal User user){
+        return notificationService.getNotificationById(id, user);
     }
 
     @PutMapping()
@@ -56,8 +57,9 @@ public class NotificationController {
     @Operation(
             summary = "Отметить уведомление как прочитанное"
     )
-    public GetNotificationDto markNotificationAsReadById(@PathVariable long id){
-        return notificationService.markNotificationAsReadById(id);
+    public GetNotificationDto markNotificationAsReadById(@PathVariable long id,
+                                                         @AuthenticationPrincipal User user){
+        return notificationService.markNotificationAsReadById(id, user);
     }
 
     @DeleteMapping("/{id}")
@@ -65,8 +67,9 @@ public class NotificationController {
     @Operation(
             summary = "Удалить уведомление по айди"
     )
-    public ResponseEntity<String> deleteNotificationById(@PathVariable long id){
-        return notificationService.deleteNotificationById(id);
+    public ResponseEntity<String> deleteNotificationById(@PathVariable long id,
+                                                         @AuthenticationPrincipal User user){
+        return notificationService.deleteNotificationById(id, user);
     }
 
     @DeleteMapping()

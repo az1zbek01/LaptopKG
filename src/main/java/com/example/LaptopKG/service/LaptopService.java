@@ -1,28 +1,18 @@
 package com.example.LaptopKG.service;
 
-import com.example.LaptopKG.dto.brand.GetBrandDto;
-import com.example.LaptopKG.dto.hardware.GetHardwareDto;
 import com.example.LaptopKG.dto.laptop.CreateLaptopDto;
 import com.example.LaptopKG.dto.laptop.GetLaptopDto;
 import com.example.LaptopKG.dto.laptop.UpdateLaptopDto;
-import com.example.LaptopKG.dto.review.GetReviewDto;
 import com.example.LaptopKG.exception.AlreadyExistException;
 import com.example.LaptopKG.exception.LaptopNotFoundException;
 import com.example.LaptopKG.exception.NotFoundException;
-import com.example.LaptopKG.model.Brand;
-import com.example.LaptopKG.model.Hardware;
-import com.example.LaptopKG.model.Laptop;
+import com.example.LaptopKG.model.*;
 import com.example.LaptopKG.model.enums.Category;
 import com.example.LaptopKG.model.enums.Guarantee;
-import com.example.LaptopKG.model.enums.HardwareType;
 import com.example.LaptopKG.model.enums.Status;
-import com.example.LaptopKG.repository.BrandRepository;
-import com.example.LaptopKG.repository.HardwareRepository;
-import com.example.LaptopKG.repository.LaptopRepository;
+import com.example.LaptopKG.repository.*;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
-import org.modelmapper.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +30,8 @@ public class LaptopService {
     private final LaptopRepository laptopRepository;
     private final BrandRepository brandRepository;
     private final HardwareRepository hardwareRepository;
+    private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     // Get all active laptops
     public List<GetLaptopDto> getLaptops() {
@@ -122,8 +114,26 @@ public class LaptopService {
                 .status(Status.ACTIVE)
                 .build();
 
-        // Save new laptop and return laptop mapping it to dto
+        // Save new laptop
         laptopRepository.save(laptop);
+
+        // Find all active users
+        List<User> users = userRepository.findAll()
+                .stream()
+                .filter(user -> user.getStatus() == Status.ACTIVE)
+                .toList();
+
+        // Send notifications about new laptop to all users
+        for(User user: users){
+            Notification notification = new Notification();
+            notification.setUser(user);
+            notification.setHeader("Добавлен новый ноутбук!");
+            notification.setMessage("В наш магазин был добавлен ноутбук бренда " + laptop.getBrand().getName() +
+                    "! Можете посмотреть более подробную информацию в списке ноутбуков.");
+            notification.setStatus(Status.ACTIVE);
+            notificationRepository.save(notification);
+        }
+
         return toGetLaptopDto(laptop);
     }
 

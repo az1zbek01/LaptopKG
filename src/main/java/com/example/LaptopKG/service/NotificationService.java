@@ -31,13 +31,14 @@ public class NotificationService {
     }
 
     // Get notification by id
-    public GetNotificationDto getNotificationById(Long id){
+    public GetNotificationDto getNotificationById(Long id, User user){
         // Get notification by id and return it or throw exception if it doesn't exist
         return toGetNotificationDto(notificationRepository.findById(id)
                 // Check if notification is active
+                .filter(notification -> notification.getUser().equals(user))
                 .filter(notification -> notification.getStatus() == Status.ACTIVE)
                 .orElseThrow(
-                        () -> new NotFoundException("Уведомление с айди " + id + " не найдено")
+                        () -> new NotFoundException("Уведомление с айди " + id + " не найдено, либо оно отправлено не вам")
                 )
         );
     }
@@ -63,9 +64,11 @@ public class NotificationService {
     }
 
     // Marking notification as read
-    public GetNotificationDto markNotificationAsReadById(long id){
+    public GetNotificationDto markNotificationAsReadById(long id, User user){
         // Get notification by id or throw exception if it doesn't exist
-        Notification notification = notificationRepository.findById(id).orElseThrow(
+        Notification notification = notificationRepository.findById(id)
+                .filter(n -> n.getUser().equals(user))
+                .orElseThrow(
                 () -> new NotFoundException("Уведомление с айди " + id + " не найдено")
         );
 
@@ -78,9 +81,11 @@ public class NotificationService {
     }
 
     // Notification deleting by id
-    public ResponseEntity<String> deleteNotificationById(long id){
+    public ResponseEntity<String> deleteNotificationById(long id, User user){
         // Get notification by id or throw exception if it doesn't exist
-        Notification notification = notificationRepository.findById(id).orElseThrow(
+        Notification notification = notificationRepository.findById(id)
+                .filter(n -> n.getUser().equals(user))
+                .orElseThrow(
                 () -> new NotFoundException("Уведомление с айди " + id + " не найдено")
         );
 
