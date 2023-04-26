@@ -22,6 +22,37 @@ public class BrandService {
     private final BrandRepository brandRepository;
     private final ModelMapper mapper;
 
+    // Getting all brands
+    public List<GetBrandDto> getAll() {
+        // Find all active brands, mapping them from Entity to DTO and return them
+        return brandRepository.findAll()
+                .stream()
+                .filter(brand -> brand.getStatus() == Status.ACTIVE)
+                .map(brand -> mapper.map(brand, GetBrandDto.class))
+                .collect(Collectors.toList());
+    }
+
+    // Getting all deleted brands
+    public List<GetBrandDto> getAllDeletedBrands() {
+        // Find all deleted brands, mapping them from Entity to DTO and return them
+        return brandRepository.findAll()
+                .stream()
+                .filter(brand -> brand.getStatus() == Status.DELETED)
+                .map(brand -> mapper.map(brand, GetBrandDto.class))
+                .collect(Collectors.toList());
+    }
+
+    // Getting brand by id
+    public GetBrandDto getById(Long id) {
+        // Map from entity to dto and return brand
+        return brandRepository.findById(id)
+                // Check if brand is not deleted
+                .filter(brand -> brand.getStatus() == Status.ACTIVE)
+                .map(brand -> mapper.map(brand, GetBrandDto.class))
+                // throw exception if brand doesn't exist
+                .orElseThrow(() -> new NotFoundException("Бренд с айди " + id + " не найден"));
+    }
+
     // Brand creating
     public GetBrandDto createBrand(CreateAndUpdateBrandDto createAndUpdateBrandDto) {
         // Check if brand exists by name
@@ -40,24 +71,22 @@ public class BrandService {
         return mapper.map(brand, GetBrandDto.class);
     }
 
-    // Getting all brands
-    public List<GetBrandDto> getAll() {
-        // Find all active brands, mapping them from Entity to DTO and return them
-        return brandRepository.findAll()
-                .stream()
-                .filter(brand -> brand.getStatus() == Status.ACTIVE)
-                .map(brand -> mapper.map(brand, GetBrandDto.class))
-                .collect(Collectors.toList());
-    }
+    // Updating brand
+    public GetBrandDto updateBrand(Long id, CreateAndUpdateBrandDto updateBrandDto) {
+        // Get brand from DB or throw exception if it doesn't exist
+        Brand brand = brandRepository.findById(id)
+                // Check if brand is not deleted
+                .filter(b -> b.getStatus() == Status.ACTIVE)
+                .orElseThrow(() -> new NotFoundException("Бренд с айди " + id + " не найден"));
 
-    // Getting all deleted brands
-    public List<GetBrandDto> getAllDeletedBrands() {
-        // Find all active brands, mapping them from Entity to DTO and return them
-        return brandRepository.findAll()
-                .stream()
-                .filter(brand -> brand.getStatus() == Status.DELETED)
-                .map(brand -> mapper.map(brand, GetBrandDto.class))
-                .collect(Collectors.toList());
+        // Update brand
+        brand.setName(updateBrandDto.getName());
+
+        // Save updated brand
+        brandRepository.save(brand);
+
+        // Map from entity to dto and return it
+        return mapper.map(brand, GetBrandDto.class);
     }
 
     // Restore deleted brand
@@ -74,35 +103,6 @@ public class BrandService {
         brandRepository.save(brand);
 
         // Return restored brand
-        return mapper.map(brand, GetBrandDto.class);
-    }
-
-    // Getting brand by id
-    public GetBrandDto getById(Long id) {
-        // Map from entity to dto and return brand
-        return brandRepository.findById(id)
-                // Check if brand is not deleted
-                .filter(brand -> brand.getStatus() == Status.ACTIVE)
-                .map(brand -> mapper.map(brand, GetBrandDto.class))
-                // throw exception if brand doesn't exist
-                .orElseThrow(() -> new NotFoundException("Бренд с айди " + id + " не найден"));
-    }
-
-    // Updating brand
-    public GetBrandDto updateBrand(Long id, CreateAndUpdateBrandDto updateBrandDto) {
-        // Get brand from DB or throw exception if it doesn't exist
-        Brand brand = brandRepository.findById(id)
-                // Check if brand is not deleted
-                .filter(b -> b.getStatus() == Status.ACTIVE)
-                .orElseThrow(() -> new NotFoundException("Бренд с айди " + id + " не найден"));
-
-        // Update brand
-        brand.setName(updateBrandDto.getName());
-
-        // Save updated brand
-        brandRepository.save(brand);
-
-        // Map from entity to dto and return it
         return mapper.map(brand, GetBrandDto.class);
     }
 

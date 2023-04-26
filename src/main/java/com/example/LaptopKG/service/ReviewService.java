@@ -2,9 +2,12 @@ package com.example.LaptopKG.service;
 
 import com.example.LaptopKG.dto.review.AddAndUpdateReviewDto;
 import com.example.LaptopKG.dto.review.GetReviewDto;
+import com.example.LaptopKG.exception.NotFoundException;
+import com.example.LaptopKG.model.Laptop;
 import com.example.LaptopKG.model.Review;
 import com.example.LaptopKG.model.User;
 import com.example.LaptopKG.model.enums.Role;
+import com.example.LaptopKG.model.enums.Status;
 import com.example.LaptopKG.repository.LaptopRepository;
 import com.example.LaptopKG.repository.ReviewRepository;
 import lombok.AllArgsConstructor;
@@ -51,6 +54,15 @@ public class ReviewService {
 
     //Get reviews by laptop id
     public List<GetReviewDto> getReviewsByLaptopId(long id) {
+        // Check if laptop exists
+        Laptop laptop = laptopRepository.findById(id)
+                .orElseThrow(
+                () -> new NotFoundException("Laptop with id " + id + " wasn't found")
+        );
+        if(laptop.getStatus() == Status.DELETED){
+            throw new NotFoundException("Laptop with id " + id + " wasn't found");
+        }
+
         //Return list of reviews on certain laptop
         return toGetReviewDtoList(reviewRepository.findAllByLaptopId(id));
     }
