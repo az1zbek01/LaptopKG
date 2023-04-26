@@ -1,15 +1,13 @@
 package com.example.LaptopKG.model;
 
 import com.example.LaptopKG.model.baseEntity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.example.LaptopKG.model.enums.Status;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "notification")
+@Table(name = "favorite")
 @Getter
 @Setter
 @RequiredArgsConstructor
@@ -17,7 +15,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Favorite extends BaseEntity {
-
     @ManyToOne
     @JoinColumn(name = "laptop_id")
     Laptop laptop;
@@ -25,4 +22,7 @@ public class Favorite extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;
+
+    @Enumerated(EnumType.STRING)
+    Status status;
 }
