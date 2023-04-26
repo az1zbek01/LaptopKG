@@ -24,6 +24,7 @@ public class BrandService {
 
     // Brand creating
     public GetBrandDto createBrand(CreateAndUpdateBrandDto createAndUpdateBrandDto) {
+        // Check if brand exists by name
         if(brandRepository.existsByName(createAndUpdateBrandDto.getName())){
             throw new AlreadyExistException("Brand with name " +
                     createAndUpdateBrandDto.getName() + " already exists");
@@ -41,11 +42,39 @@ public class BrandService {
 
     // Getting all brands
     public List<GetBrandDto> getAll() {
-        // Find all brands, mapping them from Entity to DTO and return them
+        // Find all active brands, mapping them from Entity to DTO and return them
         return brandRepository.findAll()
                 .stream()
+                .filter(brand -> brand.getStatus() == Status.ACTIVE)
                 .map(brand -> mapper.map(brand, GetBrandDto.class))
                 .collect(Collectors.toList());
+    }
+
+    // Getting all deleted brands
+    public List<GetBrandDto> getAllDeletedBrands() {
+        // Find all active brands, mapping them from Entity to DTO and return them
+        return brandRepository.findAll()
+                .stream()
+                .filter(brand -> brand.getStatus() == Status.DELETED)
+                .map(brand -> mapper.map(brand, GetBrandDto.class))
+                .collect(Collectors.toList());
+    }
+
+    // Restore deleted brand
+    public GetBrandDto restoreBrandById(long id){
+        // Find brand by id or throw exception if already active or doesn't exist in DB
+        Brand brand = brandRepository.findById(id)
+                .filter(b -> b.getStatus() == Status.DELETED)
+                .orElseThrow(
+                        () -> new AlreadyExistException("Brand with id " + id + " already active")
+                );
+
+        // Make brand active and save it
+        brand.setStatus(Status.ACTIVE);
+        brandRepository.save(brand);
+
+        // Return restored brand
+        return mapper.map(brand, GetBrandDto.class);
     }
 
     // Getting brand by id

@@ -91,7 +91,7 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
 
         ApiError err = new ApiError(
                 LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST,
+                HttpStatus.NOT_FOUND,
                 "Laptop not found" ,
                 details);
 

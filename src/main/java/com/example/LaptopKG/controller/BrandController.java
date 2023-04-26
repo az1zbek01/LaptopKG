@@ -40,6 +40,16 @@ public class BrandController {
         return brandService.getById(id);
     }
 
+    @GetMapping("/deleted")
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+            summary = "Получение всех удаленных брендов"
+    )
+    public List<GetBrandDto> getAllDeletedBrands(){
+        return brandService.getAllDeletedBrands();
+    }
+
     @PostMapping("/create")
     @SecurityRequirement(name = "JWT")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -54,10 +64,20 @@ public class BrandController {
     @SecurityRequirement(name = "JWT")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(
-            summary = "Обновление бренда"
+            summary = "Обновление бренда по айди"
     )
     public GetBrandDto updateBrand(@PathVariable Long id, @RequestBody CreateAndUpdateBrandDto updateBrandDto){
         return brandService.updateBrand(id, updateBrandDto);
+    }
+
+    @PutMapping("/restore/{id}")
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+            summary = "Восстановление бренда по айди"
+    )
+    public GetBrandDto restoreBrandById(@PathVariable Long id) {
+        return brandService.restoreBrandById(id);
     }
 
     @DeleteMapping("/{id}")

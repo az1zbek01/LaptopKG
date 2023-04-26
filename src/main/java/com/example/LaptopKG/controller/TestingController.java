@@ -18,7 +18,6 @@ public class TestingController {
 
     @GetMapping("/getUser")
     @SecurityRequirement(name = "JWT")
-    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<GetUserDto> getUserDtoResponseEntity(@AuthenticationPrincipal User user){
         return ResponseEntity.ok(new GetUserDto().getUserDto(user));
     }
