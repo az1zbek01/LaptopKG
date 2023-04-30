@@ -1,7 +1,6 @@
 package com.example.LaptopKG.controller;
 
-import com.example.LaptopKG.dto.review.AddAndUpdateReviewDto;
-import com.example.LaptopKG.dto.review.GetReviewDto;
+import com.example.LaptopKG.dto.review.RequestReviewDTO;
 import com.example.LaptopKG.model.User;
 import com.example.LaptopKG.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +26,7 @@ public class ReviewController {
     @Operation(
             summary = "Добавление отзыва к ноутбуку"
     )
-    public ResponseEntity<String> addReview(@RequestBody AddAndUpdateReviewDto addReviewDto,
+    public ResponseEntity<String> addReview(@RequestBody RequestReviewDTO addReviewDto,
                                             @AuthenticationPrincipal User user){
         return reviewService.addReview(addReviewDto, user);
     }
@@ -38,7 +37,7 @@ public class ReviewController {
             summary = "Изменение отзыва"
     )
     public ResponseEntity<String> updateReview(@PathVariable long id,
-                                               @RequestBody AddAndUpdateReviewDto updateReviewDto,
+                                               @RequestBody RequestReviewDTO updateReviewDto,
                                                @AuthenticationPrincipal User user){
         return reviewService.updateReview(id, updateReviewDto, user);
     }

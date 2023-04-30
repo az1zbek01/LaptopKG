@@ -1,8 +1,8 @@
 package com.example.LaptopKG.controller;
 
 
-import com.example.LaptopKG.dto.brand.CreateAndUpdateBrandDto;
-import com.example.LaptopKG.dto.brand.GetBrandDto;
+import com.example.LaptopKG.dto.brand.RequestBrandDTO;
+import com.example.LaptopKG.dto.brand.ResponseBrandDTO;
 import com.example.LaptopKG.service.BrandService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -28,7 +28,7 @@ public class BrandController {
     @Operation(
             summary = "Получение всех брендов"
     )
-    public List<GetBrandDto> getAllBrands(){
+    public List<ResponseBrandDTO> getAllBrands(){
         return brandService.getAll();
     }
 
@@ -36,7 +36,7 @@ public class BrandController {
     @Operation(
             summary = "Получение бренда по айди"
     )
-    public GetBrandDto getBrandById(@PathVariable Long id){
+    public ResponseBrandDTO getBrandById(@PathVariable Long id){
         return brandService.getById(id);
     }
 
@@ -46,7 +46,7 @@ public class BrandController {
     @Operation(
             summary = "Получение всех удаленных брендов"
     )
-    public List<GetBrandDto> getAllDeletedBrands(){
+    public List<ResponseBrandDTO> getAllDeletedBrands(){
         return brandService.getAllDeletedBrands();
     }
 
@@ -56,7 +56,7 @@ public class BrandController {
     @Operation(
             summary = "Добавление бренда"
     )
-    public GetBrandDto createBrand(@RequestBody CreateAndUpdateBrandDto createBrandDto){
+    public ResponseBrandDTO createBrand(@RequestBody RequestBrandDTO createBrandDto){
         return brandService.createBrand(createBrandDto);
     }
 
@@ -66,7 +66,7 @@ public class BrandController {
     @Operation(
             summary = "Обновление бренда по айди"
     )
-    public GetBrandDto updateBrand(@PathVariable Long id, @RequestBody CreateAndUpdateBrandDto updateBrandDto){
+    public ResponseBrandDTO updateBrand(@PathVariable Long id, @RequestBody RequestBrandDTO updateBrandDto){
         return brandService.updateBrand(id, updateBrandDto);
     }
 
@@ -76,7 +76,7 @@ public class BrandController {
     @Operation(
             summary = "Восстановление бренда по айди"
     )
-    public GetBrandDto restoreBrandById(@PathVariable Long id) {
+    public ResponseBrandDTO restoreBrandById(@PathVariable Long id) {
         return brandService.restoreBrandById(id);
     }
 

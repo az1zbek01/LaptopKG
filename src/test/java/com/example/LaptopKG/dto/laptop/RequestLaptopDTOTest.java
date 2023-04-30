@@ -11,7 +11,7 @@ import org.modelmapper.spi.MappingContext;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateLaptopDtoTest {
+public class RequestLaptopDTOTest {
 
     @Test
     void createLaptopMapperTest(){

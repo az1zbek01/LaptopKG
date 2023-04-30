@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class GetNotificationDto {
+public class ResponseNotificationDTO {
     Long id;
     String header;
 
@@ -21,8 +21,8 @@ public class GetNotificationDto {
 
     boolean read;
 
-    public static GetNotificationDto toGetNotificationDto(Notification notification){
-        return GetNotificationDto.builder()
+    public static ResponseNotificationDTO toGetNotificationDto(Notification notification){
+        return ResponseNotificationDTO.builder()
                 .id(notification.getId())
                 .header(notification.getHeader())
                 .message(notification.getMessage())
@@ -30,7 +30,7 @@ public class GetNotificationDto {
                 .build();
     }
 
-    public static List<GetNotificationDto> toGetNotificationDto(List<Notification> notifications){
-        return notifications.stream().map(GetNotificationDto::toGetNotificationDto).collect(Collectors.toList());
+    public static List<ResponseNotificationDTO> toGetNotificationDto(List<Notification> notifications){
+        return notifications.stream().map(ResponseNotificationDTO::toGetNotificationDto).collect(Collectors.toList());
     }
 }

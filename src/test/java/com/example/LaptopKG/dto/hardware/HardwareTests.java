@@ -6,7 +6,6 @@ import com.example.LaptopKG.model.enums.HardwareType;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
@@ -31,21 +30,21 @@ public class HardwareTests {
         Converter<String, HardwareType> hardwareTypeConverter =
                 src -> src.getSource() == null ? null : HardwareType.of(src.getSource());
 
-        mapper.typeMap(CreateHardwareDto.class, Hardware.class)
+        mapper.typeMap(RequestHardwareDTO.class, Hardware.class)
                 .addMappings(mapper -> mapper.using(hardwareTypeConverter)
-                        .map(CreateHardwareDto::getHardwareType, Hardware::setHardwareType));
+                        .map(RequestHardwareDTO::getHardwareType, Hardware::setHardwareType));
 
-        CreateHardwareDto createHardwareDto = CreateHardwareDto.builder()
+        RequestHardwareDTO requestHardwareDTO = RequestHardwareDTO.builder()
                 .name("test name")
                 .hardwareType(HardwareType.RESOLUTION.getHardwareType())
                 .build();
 
 
 
-        Hardware hardware = mapper.map(createHardwareDto, Hardware.class);
+        Hardware hardware = mapper.map(requestHardwareDTO, Hardware.class);
 
 
-        assertEquals(hardware.getHardwareType().getHardwareType(), createHardwareDto.getHardwareType());
+        assertEquals(hardware.getHardwareType().getHardwareType(), requestHardwareDTO.getHardwareType());
 
 
     }

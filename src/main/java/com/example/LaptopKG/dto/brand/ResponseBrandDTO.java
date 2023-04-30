@@ -10,7 +10,11 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateAndUpdateBrandDto {
+public class ResponseBrandDTO {
+
+    Long id;
     String name;
+
+
 
 }

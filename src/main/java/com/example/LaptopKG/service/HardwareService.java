@@ -1,14 +1,11 @@
 package com.example.LaptopKG.service;
 
-import com.example.LaptopKG.dto.hardware.CreateHardwareDto;
-import com.example.LaptopKG.dto.hardware.GetHardwareDto;
+import com.example.LaptopKG.dto.hardware.RequestHardwareDTO;
+import com.example.LaptopKG.dto.hardware.ResponseHardwareDTO;
 import com.example.LaptopKG.model.Hardware;
-import com.example.LaptopKG.model.enums.HardwareType;
 import com.example.LaptopKG.repository.HardwareRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,20 +18,20 @@ public class HardwareService {
     private final HardwareRepository hardwareRepository;
     private final ModelMapper mapper;
 
-    public GetHardwareDto createHardware(CreateHardwareDto createHardwareDto) {
+    public ResponseHardwareDTO createHardware(RequestHardwareDTO requestHardwareDTO) {
 
-        Hardware hardware = mapper.map(createHardwareDto, Hardware.class);
+        Hardware hardware = mapper.map(requestHardwareDTO, Hardware.class);
 
         hardwareRepository.save(hardware);
-        return mapper.map(hardware, GetHardwareDto.class);
+        return mapper.map(hardware, ResponseHardwareDTO.class);
     }
 
-    public List<GetHardwareDto> getAllHardware() {
+    public List<ResponseHardwareDTO> getAllHardware() {
 
 
         return hardwareRepository.findAll().stream().map(
                 hardware ->
-                mapper.map(hardware, GetHardwareDto.class)
+                mapper.map(hardware, ResponseHardwareDTO.class)
 
 
         ).collect(Collectors.toList());

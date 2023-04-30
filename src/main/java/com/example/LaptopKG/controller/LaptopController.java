@@ -1,10 +1,9 @@
 package com.example.LaptopKG.controller;
 
 
-import com.example.LaptopKG.dto.laptop.CreateLaptopDto;
-import com.example.LaptopKG.dto.laptop.GetLaptopDto;
-import com.example.LaptopKG.dto.laptop.UpdateLaptopDto;
-import com.example.LaptopKG.dto.review.GetReviewDto;
+import com.example.LaptopKG.dto.laptop.RequestLaptopDTO;
+import com.example.LaptopKG.dto.laptop.ResponseLaptopDTO;
+import com.example.LaptopKG.dto.review.ResponseReviewDTO;
 import com.example.LaptopKG.service.LaptopService;
 import com.example.LaptopKG.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +35,7 @@ public class LaptopController {
     @Operation(
             summary = "Получение всех ноутбуков"
     )
-    public List<GetLaptopDto> getAll(){
+    public List<ResponseLaptopDTO> getAll(){
         return laptopService.getLaptops();
     }
 
@@ -44,15 +43,23 @@ public class LaptopController {
     @Operation(
             summary = "Получение всех ноутбуков с пагинацией"
     )
-    public Page<GetLaptopDto> getAllWithPagination(@PageableDefault Pageable pageable){
+    public Page<ResponseLaptopDTO> getAllWithPagination(@PageableDefault Pageable pageable){
         return laptopService.getLaptops(pageable);
+    }
+
+    @GetMapping("/search")
+    @Operation(
+            summary = "Поиск ноутбуков по названию и описанию"
+    )
+    public List<ResponseLaptopDTO> getAllWithSearchByQuery(@RequestParam(required = false) String query){
+        return laptopService.getAllWithSearchByQuery(query);
     }
 
     @GetMapping("/{id}")
     @Operation(
             summary = "Получение ноутбука по айди"
     )
-    public GetLaptopDto getById(@PathVariable Long id){
+    public ResponseLaptopDTO getById(@PathVariable Long id){
         return laptopService.getLaptopById(id);
     }
 
@@ -60,7 +67,7 @@ public class LaptopController {
     @Operation(
             summary = "Получение всех отзывов на ноутбук"
     )
-    public List<GetReviewDto> getReviewsByLaptopId(@PathVariable long id){
+    public List<ResponseReviewDTO> getReviewsByLaptopId(@PathVariable long id){
         return reviewService.getReviewsByLaptopId(id);
     }
 
@@ -70,7 +77,7 @@ public class LaptopController {
     @Operation(
             summary = "Получение всех удаленных ноутбуков"
     )
-    public List<GetLaptopDto> getAllDeletedLaptops(){
+    public List<ResponseLaptopDTO> getAllDeletedLaptops(){
         return laptopService.getAllDeletedLaptops();
     }
 
@@ -80,8 +87,8 @@ public class LaptopController {
     @Operation(
             summary = "Добавление ноутбука"
     )
-    public GetLaptopDto createLaptop(@RequestBody CreateLaptopDto createLaptopDto){
-        return laptopService.createLaptop(createLaptopDto);
+    public ResponseLaptopDTO createLaptop(@RequestBody RequestLaptopDTO requestLaptopDTO){
+        return laptopService.createLaptop(requestLaptopDTO);
     }
 
     @PutMapping("/{id}")
@@ -90,8 +97,8 @@ public class LaptopController {
     @Operation(
             summary = "Обновление ноутбука по айди"
     )
-    public GetLaptopDto updateLaptop(@PathVariable Long id,
-                                          @RequestBody UpdateLaptopDto updateLaptopDto){
+    public ResponseLaptopDTO updateLaptop(@PathVariable Long id,
+                                          @RequestBody RequestLaptopDTO updateLaptopDto){
         return laptopService.updateLaptop(id, updateLaptopDto);
     }
 
@@ -101,7 +108,7 @@ public class LaptopController {
     @Operation(
             summary = "Восстановление ноутбука по айди"
     )
-    public GetLaptopDto restoreLaptopById(@PathVariable Long id){
+    public ResponseLaptopDTO restoreLaptopById(@PathVariable Long id){
         return laptopService.restoreLaptopById(id);
     }
 

@@ -15,19 +15,19 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class GetReviewDto {
+public class ResponseReviewDTO {
     long id;
 
     String text;
 
     int score;
 
-    private LocalDateTime updatedAt;
+    LocalDateTime updatedAt;
 
     GetUserDto userDto;
 
-    public static GetReviewDto toGetReviewDto(Review review){
-        return GetReviewDto.builder()
+    public static ResponseReviewDTO toGetReviewDto(Review review){
+        return ResponseReviewDTO.builder()
                 .id(review.getId())
                 .userDto(GetUserDto.getUserDto(review.getUser()))
                 .score(review.getScore())
@@ -36,8 +36,8 @@ public class GetReviewDto {
                 .build();
     }
 
-    public static List<GetReviewDto> toGetReviewDtoList(List<Review> reviews){
-        return reviews.stream().map(GetReviewDto::toGetReviewDto).collect(Collectors.toList());
+    public static List<ResponseReviewDTO> toGetReviewDtoList(List<Review> reviews){
+        return reviews.stream().map(ResponseReviewDTO::toGetReviewDto).collect(Collectors.toList());
     }
 
 }

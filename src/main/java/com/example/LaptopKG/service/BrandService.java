@@ -1,8 +1,8 @@
 package com.example.LaptopKG.service;
 
 
-import com.example.LaptopKG.dto.brand.CreateAndUpdateBrandDto;
-import com.example.LaptopKG.dto.brand.GetBrandDto;
+import com.example.LaptopKG.dto.brand.RequestBrandDTO;
+import com.example.LaptopKG.dto.brand.ResponseBrandDTO;
 import com.example.LaptopKG.exception.AlreadyExistException;
 import com.example.LaptopKG.exception.NotFoundException;
 import com.example.LaptopKG.model.Brand;
@@ -23,56 +23,56 @@ public class BrandService {
     private final ModelMapper mapper;
 
     // Getting all brands
-    public List<GetBrandDto> getAll() {
+    public List<ResponseBrandDTO> getAll() {
         // Find all active brands, mapping them from Entity to DTO and return them
         return brandRepository.findAll()
                 .stream()
                 .filter(brand -> brand.getStatus() == Status.ACTIVE)
-                .map(brand -> mapper.map(brand, GetBrandDto.class))
+                .map(brand -> mapper.map(brand, ResponseBrandDTO.class))
                 .collect(Collectors.toList());
     }
 
     // Getting all deleted brands
-    public List<GetBrandDto> getAllDeletedBrands() {
+    public List<ResponseBrandDTO> getAllDeletedBrands() {
         // Find all deleted brands, mapping them from Entity to DTO and return them
         return brandRepository.findAll()
                 .stream()
                 .filter(brand -> brand.getStatus() == Status.DELETED)
-                .map(brand -> mapper.map(brand, GetBrandDto.class))
+                .map(brand -> mapper.map(brand, ResponseBrandDTO.class))
                 .collect(Collectors.toList());
     }
 
     // Getting brand by id
-    public GetBrandDto getById(Long id) {
+    public ResponseBrandDTO getById(Long id) {
         // Map from entity to dto and return brand
         return brandRepository.findById(id)
                 // Check if brand is not deleted
                 .filter(brand -> brand.getStatus() == Status.ACTIVE)
-                .map(brand -> mapper.map(brand, GetBrandDto.class))
+                .map(brand -> mapper.map(brand, ResponseBrandDTO.class))
                 // throw exception if brand doesn't exist
                 .orElseThrow(() -> new NotFoundException("Бренд с айди " + id + " не найден"));
     }
 
     // Brand creating
-    public GetBrandDto createBrand(CreateAndUpdateBrandDto createAndUpdateBrandDto) {
+    public ResponseBrandDTO createBrand(RequestBrandDTO requestBrandDTO) {
         // Check if brand exists by name
-        if(brandRepository.existsByName(createAndUpdateBrandDto.getName())){
+        if(brandRepository.existsByName(requestBrandDTO.getName())){
             throw new AlreadyExistException("Brand with name " +
-                    createAndUpdateBrandDto.getName() + " already exists");
+                    requestBrandDTO.getName() + " already exists");
         }
         // We are mapping from DTO to Entity
-        Brand brand = mapper.map(createAndUpdateBrandDto, Brand.class);
+        Brand brand = mapper.map(requestBrandDTO, Brand.class);
 
         // Make brand active and save it
         brand.setStatus(Status.ACTIVE);
         brandRepository.save(brand);
 
         // Mapping from Entity to DTO and return it
-        return mapper.map(brand, GetBrandDto.class);
+        return mapper.map(brand, ResponseBrandDTO.class);
     }
 
     // Updating brand
-    public GetBrandDto updateBrand(Long id, CreateAndUpdateBrandDto updateBrandDto) {
+    public ResponseBrandDTO updateBrand(Long id, RequestBrandDTO updateBrandDto) {
         // Get brand from DB or throw exception if it doesn't exist
         Brand brand = brandRepository.findById(id)
                 // Check if brand is not deleted
@@ -86,11 +86,11 @@ public class BrandService {
         brandRepository.save(brand);
 
         // Map from entity to dto and return it
-        return mapper.map(brand, GetBrandDto.class);
+        return mapper.map(brand, ResponseBrandDTO.class);
     }
 
     // Restore deleted brand
-    public GetBrandDto restoreBrandById(long id){
+    public ResponseBrandDTO restoreBrandById(long id){
         // Find brand by id or throw exception if already active or doesn't exist in DB
         Brand brand = brandRepository.findById(id)
                 .filter(b -> b.getStatus() == Status.DELETED)
@@ -103,7 +103,7 @@ public class BrandService {
         brandRepository.save(brand);
 
         // Return restored brand
-        return mapper.map(brand, GetBrandDto.class);
+        return mapper.map(brand, ResponseBrandDTO.class);
     }
 
     // Brand deleting

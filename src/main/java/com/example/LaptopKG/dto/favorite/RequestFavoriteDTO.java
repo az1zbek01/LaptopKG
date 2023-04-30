@@ -1,5 +1,4 @@
-package com.example.LaptopKG.dto.user;
-
+package com.example.LaptopKG.dto.favorite;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,9 +7,8 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DeleteUserDto {
-
-    long userId;
-
+public class RequestFavoriteDTO {
+    Long laptopId;
 }

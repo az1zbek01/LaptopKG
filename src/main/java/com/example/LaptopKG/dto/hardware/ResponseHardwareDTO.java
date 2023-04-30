@@ -16,20 +16,20 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class GetHardwareDto {
+public class ResponseHardwareDTO {
     Long id;
     String name;
     String hardwareType;
 
-    public static GetHardwareDto toGetHardwareDto(Hardware hardware){
-        return GetHardwareDto.builder()
+    public static ResponseHardwareDTO toGetHardwareDto(Hardware hardware){
+        return ResponseHardwareDTO.builder()
                 .id(hardware.getId())
                 .name(hardware.getName())
                 .hardwareType(hardware.getHardwareType().getHardwareType())
                 .build();
     }
 
-    public static List<GetHardwareDto> toGetHardwareDto(List<Hardware> hardwareList){
-        return hardwareList.stream().map(GetHardwareDto::toGetHardwareDto).collect(Collectors.toList());
+    public static List<ResponseHardwareDTO> toGetHardwareDto(List<Hardware> hardwareList){
+        return hardwareList.stream().map(ResponseHardwareDTO::toGetHardwareDto).collect(Collectors.toList());
     }
 }
