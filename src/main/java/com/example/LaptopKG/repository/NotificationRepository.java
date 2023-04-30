@@ -1,6 +1,5 @@
 package com.example.LaptopKG.repository;
 
-import com.example.LaptopKG.dto.notification.GetNotificationDto;
 import com.example.LaptopKG.model.Notification;
 import com.example.LaptopKG.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;

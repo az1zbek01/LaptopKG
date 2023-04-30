@@ -1,7 +1,6 @@
 package com.example.LaptopKG.controller;
 
-import com.example.LaptopKG.dto.notification.GetNotificationDto;
-import com.example.LaptopKG.dto.review.GetReviewDto;
+import com.example.LaptopKG.dto.notification.ResponseNotificationDTO;
 import com.example.LaptopKG.model.User;
 import com.example.LaptopKG.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +28,7 @@ public class NotificationController {
     @Operation(
             summary = "Получение всех уведомлений авторизованного пользователя"
     )
-    public List<GetNotificationDto> getAllNotificationsByUser(@AuthenticationPrincipal User user){
+    public List<ResponseNotificationDTO> getAllNotificationsByUser(@AuthenticationPrincipal User user){
         return notificationService.getAllNotificationsByUser(user);
     }
 
@@ -38,8 +37,8 @@ public class NotificationController {
     @Operation(
             summary = "Получение уведомления по айди"
     )
-    public GetNotificationDto getNotificationById(@PathVariable long id,
-                                                  @AuthenticationPrincipal User user){
+    public ResponseNotificationDTO getNotificationById(@PathVariable long id,
+                                                       @AuthenticationPrincipal User user){
         return notificationService.getNotificationById(id, user);
     }
 
@@ -48,7 +47,7 @@ public class NotificationController {
     @Operation(
             summary = "Отметить все уведомления как прочитанное"
     )
-    public List<GetNotificationDto> markAllNotificationsAsReadByUser(@AuthenticationPrincipal User user){
+    public List<ResponseNotificationDTO> markAllNotificationsAsReadByUser(@AuthenticationPrincipal User user){
         return notificationService.markAllNotificationsAsReadByUser(user);
     }
 
@@ -57,8 +56,8 @@ public class NotificationController {
     @Operation(
             summary = "Отметить уведомление как прочитанное"
     )
-    public GetNotificationDto markNotificationAsReadById(@PathVariable long id,
-                                                         @AuthenticationPrincipal User user){
+    public ResponseNotificationDTO markNotificationAsReadById(@PathVariable long id,
+                                                              @AuthenticationPrincipal User user){
         return notificationService.markNotificationAsReadById(id, user);
     }
 

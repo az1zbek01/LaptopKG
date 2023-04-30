@@ -22,13 +22,13 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Laptop extends BaseEntity {
+    String name;
+
     String description;
 
     int price;
 
     int amount;
-
-    int discount;
 
     @Enumerated(EnumType.STRING)
     Guarantee guarantee;
@@ -46,12 +46,6 @@ public class Laptop extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "hardware_id")
     )
     List<Hardware> hardwareList;
-
-    @ManyToMany
-    @JoinTable(name = "favorite",
-            joinColumns = @JoinColumn(name="laptop_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    List<User> users = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "brand_id")

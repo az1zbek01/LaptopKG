@@ -3,6 +3,7 @@ package com.example.LaptopKG.service;
 import com.example.LaptopKG.dto.user.AuthUserDto;
 import com.example.LaptopKG.dto.AuthenticationResponse;
 import com.example.LaptopKG.dto.user.CreateUserDto;
+import com.example.LaptopKG.exception.NotFoundException;
 import com.example.LaptopKG.exception.UserAlreadyExistException;
 import com.example.LaptopKG.model.User;
 import com.example.LaptopKG.model.enums.Role;
@@ -81,7 +82,10 @@ public class UserService {
                     request.getPassword()
             )
         );
-        var user = repository.findByEmail(request.getEmail()).orElseThrow();
+        var user = repository.findByEmail(request.getEmail())
+                .orElseThrow(
+                        () -> new NotFoundException("Email wasn't found")
+        );
         var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse

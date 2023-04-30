@@ -1,8 +1,8 @@
 package com.example.LaptopKG.dto.hardware;
 
-import com.example.LaptopKG.model.enums.HardwareType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
 
 @Getter
 @Setter
@@ -10,11 +10,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class HardwareNameDto {
-
+public class RequestHardwareDTO {
     String name;
-
-
-    HardwareType hardwareType;
-
+    String hardwareType;
 }

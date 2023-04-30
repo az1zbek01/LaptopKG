@@ -38,9 +38,7 @@ public class AuthenticationController{
     @Operation(
             summary = "Авторизация активированного аккаунта"
     )
-    public ResponseEntity<AuthenticationResponse> authenticate(
-            @RequestBody AuthUserDto request
-    ) {
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthUserDto request) {
         return ResponseEntity.ok(service.authenticate(request));
     }
 

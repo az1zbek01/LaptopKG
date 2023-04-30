@@ -1,6 +1,5 @@
 package com.example.LaptopKG.controller;
 
-import com.example.LaptopKG.dto.laptop.CreateLaptopDto;
 import com.example.LaptopKG.dto.user.GetUserDto;
 import com.example.LaptopKG.model.User;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

@@ -1,8 +1,7 @@
 package com.example.LaptopKG.service;
 
-import com.example.LaptopKG.dto.laptop.CreateLaptopDto;
-import com.example.LaptopKG.dto.laptop.GetLaptopDto;
-import com.example.LaptopKG.dto.laptop.UpdateLaptopDto;
+import com.example.LaptopKG.dto.laptop.RequestLaptopDTO;
+import com.example.LaptopKG.dto.laptop.ResponseLaptopDTO;
 import com.example.LaptopKG.exception.AlreadyExistException;
 import com.example.LaptopKG.exception.LaptopNotFoundException;
 import com.example.LaptopKG.exception.NotFoundException;
@@ -11,6 +10,7 @@ import com.example.LaptopKG.model.enums.Category;
 import com.example.LaptopKG.model.enums.Guarantee;
 import com.example.LaptopKG.model.enums.Status;
 import com.example.LaptopKG.repository.*;
+import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.example.LaptopKG.dto.laptop.GetLaptopDto.toGetLaptopDto;
+import static com.example.LaptopKG.dto.laptop.ResponseLaptopDTO.toResponseLaptopDTO;
 
 @Service
 @AllArgsConstructor
@@ -32,11 +32,12 @@ public class LaptopService {
     private final HardwareRepository hardwareRepository;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
+    private final EntityManager entityManager;
 
     // Get all active laptops
-    public List<GetLaptopDto> getLaptops() {
+    public List<ResponseLaptopDTO> getLaptops() {
         // Return laptops mapping from entity to dto
-        return toGetLaptopDto(
+        return toResponseLaptopDTO(
             // find all laptops from db
             laptopRepository.findAll()
                 .stream()
@@ -47,9 +48,9 @@ public class LaptopService {
     }
 
     // Get all active laptops with pagination
-    public Page<GetLaptopDto> getLaptops(Pageable pageable) {
+    public Page<ResponseLaptopDTO> getLaptops(Pageable pageable) {
         // Find all laptops from DB, map from entity to dto
-        List<GetLaptopDto> laptops = toGetLaptopDto(
+        List<ResponseLaptopDTO> laptops = toResponseLaptopDTO(
             // find all laptops from db
             laptopRepository.findAll()
                 .stream()
@@ -63,7 +64,7 @@ public class LaptopService {
     }
 
     // Get laptop by id
-    public GetLaptopDto getLaptopById(Long id) {
+    public ResponseLaptopDTO getLaptopById(Long id) {
         // Find laptop in DB by id
         Laptop laptop = laptopRepository.findById(id)
                 // check if laptop is active
@@ -73,24 +74,31 @@ public class LaptopService {
                         () -> new LaptopNotFoundException("Ноутбук с id " + id + " не найден")
                 );
 
-        return toGetLaptopDto(laptop);
+        return toResponseLaptopDTO(laptop);
     }
 
     // Getting all deleted laptops
-    public List<GetLaptopDto> getAllDeletedLaptops() {
+    public List<ResponseLaptopDTO> getAllDeletedLaptops() {
         // Find all deleted laptops, mapping them from Entity to DTO and return them
-        return toGetLaptopDto(laptopRepository.findAll()
+        return toResponseLaptopDTO(laptopRepository.findAll()
                 .stream()
                 .filter(brand -> brand.getStatus() == Status.DELETED)
                 .collect(Collectors.toList())
         );
     }
 
+    public List<ResponseLaptopDTO> getAllWithSearchByQuery(String query){
+        if(query != null)
+            return toResponseLaptopDTO(laptopRepository.findAllByNameContainsIgnoreCaseOrDescriptionContainsIgnoreCase(query, query));
+
+        return toResponseLaptopDTO(laptopRepository.findAll());
+    }
+
     // Laptop creation
-    public GetLaptopDto createLaptop(CreateLaptopDto createLaptopDto) {
-        // Get list of hardware by ids
+    public ResponseLaptopDTO createLaptop(RequestLaptopDTO requestLaptopDTO) {
+        // Get set of hardware by ids
         Set<Hardware> hardwareSet = new HashSet<>();
-        for (long id: createLaptopDto.getHardwareIds()) {
+        for (long id: requestLaptopDTO.getHardwareIds()) {
             hardwareSet.add(hardwareRepository.findById(id)
                     // throw exception if hardware doesn't exist
                     .orElseThrow(() -> new NotFoundException("Железо с айди " + id + " не было найдено"))
@@ -99,18 +107,18 @@ public class LaptopService {
         // Map from dto to entity
         Laptop laptop = Laptop.builder()
                 .hardwareList(new ArrayList<>(hardwareSet))
-                .description(createLaptopDto.getDescription())
-                .price(createLaptopDto.getPrice())
-                .amount(createLaptopDto.getAmount())
-                .brand(brandRepository.findById(createLaptopDto.getBrandId())
+                .description(requestLaptopDTO.getDescription())
+                .price(requestLaptopDTO.getPrice())
+                .amount(requestLaptopDTO.getAmount())
+                .brand(brandRepository.findById(requestLaptopDTO.getBrandId())
                         // throw exception if brand doesn't exist
                         .orElseThrow(
-                            () -> new NotFoundException("Brand with id " + createLaptopDto.getBrandId() + " wasn't found")
+                            () -> new NotFoundException("Brand with id " + requestLaptopDTO.getBrandId() + " wasn't found")
                         )
                 )
-                .discount(createLaptopDto.getDiscount())
-                .category(Category.of(createLaptopDto.getCategory()))
-                .guarantee(Guarantee.of(createLaptopDto.getGuarantee()))
+                .name(requestLaptopDTO.getName())
+                .category(Category.of(requestLaptopDTO.getCategory()))
+                .guarantee(Guarantee.of(requestLaptopDTO.getGuarantee()))
                 .status(Status.ACTIVE)
                 .build();
 
@@ -134,11 +142,11 @@ public class LaptopService {
             notificationRepository.save(notification);
         }
 
-        return toGetLaptopDto(laptop);
+        return toResponseLaptopDTO(laptop);
     }
 
     // Laptop updating
-    public GetLaptopDto updateLaptop(Long id, UpdateLaptopDto updateLaptopDto) {
+    public ResponseLaptopDTO updateLaptop(Long id, RequestLaptopDTO updateLaptopDto) {
 
         // Check if laptop exists by id
         if(!laptopRepository.existsById(id)){
@@ -166,21 +174,20 @@ public class LaptopService {
                                 () -> new NotFoundException("Brand with id " + updateLaptopDto.getBrandId() + " wasn't found")
                         )
                 )
-                .discount(updateLaptopDto.getDiscount())
+                .name(updateLaptopDto.getName())
                 .category(Category.of(updateLaptopDto.getCategory()))
                 .guarantee(Guarantee.of(updateLaptopDto.getGuarantee()))
-                .status(Status.of(updateLaptopDto.getStatus()))
                 .build();
 
         // Save updated laptop and return laptop mapping it to dto
         laptop.setId(id);
         laptopRepository.save(laptop);
 
-        return toGetLaptopDto(laptop);
+        return toResponseLaptopDTO(laptop);
     }
 
     // Restore deleted laptop
-    public GetLaptopDto restoreLaptopById(long id){
+    public ResponseLaptopDTO restoreLaptopById(long id){
         // Find brand by id or throw exception if already active or doesn't exist in DB
         Laptop laptop = laptopRepository.findById(id)
                 .filter(b -> b.getStatus() == Status.DELETED)
@@ -193,7 +200,7 @@ public class LaptopService {
         laptopRepository.save(laptop);
 
         // Return restored laptop
-        return toGetLaptopDto(laptop);
+        return toResponseLaptopDTO(laptop);
     }
 
     // Laptop deleting

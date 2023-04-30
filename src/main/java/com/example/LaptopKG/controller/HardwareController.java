@@ -1,9 +1,7 @@
 package com.example.LaptopKG.controller;
 
 
-import com.example.LaptopKG.dto.hardware.CreateHardwareDto;
-import com.example.LaptopKG.dto.hardware.HardwareNameDto;
-import com.example.LaptopKG.model.enums.HardwareType;
+import com.example.LaptopKG.dto.hardware.RequestHardwareDTO;
 import com.example.LaptopKG.service.HardwareService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -31,8 +29,8 @@ public class HardwareController {
     @Operation(
             summary = "Добавление железа"
     )
-    public ResponseEntity<?> createHardware(@RequestBody @Valid CreateHardwareDto createHardwareDto){
-        return ResponseEntity.ok(hardwareService.createHardware(createHardwareDto));
+    public ResponseEntity<?> createHardware(@RequestBody @Valid RequestHardwareDTO requestHardwareDTO){
+        return ResponseEntity.ok(hardwareService.createHardware(requestHardwareDTO));
     }
 
     @GetMapping

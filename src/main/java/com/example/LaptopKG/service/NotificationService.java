@@ -1,6 +1,6 @@
 package com.example.LaptopKG.service;
 
-import com.example.LaptopKG.dto.notification.GetNotificationDto;
+import com.example.LaptopKG.dto.notification.ResponseNotificationDTO;
 import com.example.LaptopKG.exception.NotFoundException;
 import com.example.LaptopKG.model.Notification;
 import com.example.LaptopKG.model.User;
@@ -11,9 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static com.example.LaptopKG.dto.notification.GetNotificationDto.toGetNotificationDto;
+import static com.example.LaptopKG.dto.notification.ResponseNotificationDTO.toGetNotificationDto;
 
 @Service
 @AllArgsConstructor
@@ -21,7 +20,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     // Getting all notification by certain user
-    public List<GetNotificationDto> getAllNotificationsByUser(User user){
+    public List<ResponseNotificationDTO> getAllNotificationsByUser(User user){
         // Get all notifications, map from entity to dto and return them
         return toGetNotificationDto(notificationRepository.findAllByUser(user)
                 // Find active notifications
@@ -31,7 +30,7 @@ public class NotificationService {
     }
 
     // Get notification by id
-    public GetNotificationDto getNotificationById(Long id, User user){
+    public ResponseNotificationDTO getNotificationById(Long id, User user){
         // Get notification by id and return it or throw exception if it doesn't exist
         return toGetNotificationDto(notificationRepository.findById(id)
                 // Check if notification is active
@@ -44,7 +43,7 @@ public class NotificationService {
     }
 
     // Mark all notifications of certain user as read
-    public List<GetNotificationDto> markAllNotificationsAsReadByUser(User user){
+    public List<ResponseNotificationDTO> markAllNotificationsAsReadByUser(User user){
         // Get all notifications of user
         List<Notification> notifications = notificationRepository.findAllByUser(user)
                 .stream()
@@ -64,7 +63,7 @@ public class NotificationService {
     }
 
     // Marking notification as read
-    public GetNotificationDto markNotificationAsReadById(long id, User user){
+    public ResponseNotificationDTO markNotificationAsReadById(long id, User user){
         // Get notification by id or throw exception if it doesn't exist
         Notification notification = notificationRepository.findById(id)
                 .filter(n -> n.getUser().equals(user))

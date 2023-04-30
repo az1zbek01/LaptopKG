@@ -1,7 +1,7 @@
 package com.example.LaptopKG.service;
 
-import com.example.LaptopKG.dto.review.AddAndUpdateReviewDto;
-import com.example.LaptopKG.dto.review.GetReviewDto;
+import com.example.LaptopKG.dto.review.RequestReviewDTO;
+import com.example.LaptopKG.dto.review.ResponseReviewDTO;
 import com.example.LaptopKG.exception.NotFoundException;
 import com.example.LaptopKG.model.Laptop;
 import com.example.LaptopKG.model.Review;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.LaptopKG.dto.review.GetReviewDto.toGetReviewDtoList;
+import static com.example.LaptopKG.dto.review.ResponseReviewDTO.toGetReviewDtoList;
 
 @Service
 @AllArgsConstructor
@@ -25,25 +25,25 @@ public class ReviewService {
     private final LaptopRepository laptopRepository;
 
     //Review adding
-    public ResponseEntity<String> addReview(AddAndUpdateReviewDto addAndUpdateReviewDto, User user){
+    public ResponseEntity<String> addReview(RequestReviewDTO requestReviewDTO, User user){
         //Check if laptop exists in DB by ID
-        if(!laptopRepository.existsById(addAndUpdateReviewDto.getLaptopId())){
+        if(!laptopRepository.existsById(requestReviewDTO.getLaptopId())){
             //if laptop does not exist, return bad request
             return ResponseEntity.badRequest().body("Laptop with id "
-                    + addAndUpdateReviewDto.getLaptopId() + " wasn't found");
+                    + requestReviewDTO.getLaptopId() + " wasn't found");
         }
         //Check if this user has already left review on this laptop
-        if(reviewRepository.existsByLaptopIdAndUser(addAndUpdateReviewDto.getLaptopId(), user)){
+        if(reviewRepository.existsByLaptopIdAndUser(requestReviewDTO.getLaptopId(), user)){
             return ResponseEntity.badRequest().body("This user has already left review for the laptop with id "
-                    + addAndUpdateReviewDto.getLaptopId());
+                    + requestReviewDTO.getLaptopId());
         }
 
         //Take info from DTO and save review
         reviewRepository.save(
                 Review.builder()
-                        .score(addAndUpdateReviewDto.getScore())
-                        .text(addAndUpdateReviewDto.getText())
-                        .laptop(laptopRepository.findById(addAndUpdateReviewDto.getLaptopId()).get())
+                        .score(requestReviewDTO.getScore())
+                        .text(requestReviewDTO.getText())
+                        .laptop(laptopRepository.findById(requestReviewDTO.getLaptopId()).get())
                         .user(user)
                         .build()
         );
@@ -53,7 +53,7 @@ public class ReviewService {
     }
 
     //Get reviews by laptop id
-    public List<GetReviewDto> getReviewsByLaptopId(long id) {
+    public List<ResponseReviewDTO> getReviewsByLaptopId(long id) {
         // Check if laptop exists
         Laptop laptop = laptopRepository.findById(id)
                 .orElseThrow(
@@ -69,7 +69,7 @@ public class ReviewService {
 
     //Review updating
     public ResponseEntity<String> updateReview(long id,
-                                               AddAndUpdateReviewDto updateReviewDto,
+                                               RequestReviewDTO updateReviewDto,
                                                User user) {
 
         //Check if review exists by ID
