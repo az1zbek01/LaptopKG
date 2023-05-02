@@ -12,7 +12,4 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByUser(User user);
 
-    Optional<Order> findByLaptopsAndUser(List<Laptop> laptops, User user);
-
-    boolean existsByLaptopsAndUser(List<Laptop> laptops, User user);
 }

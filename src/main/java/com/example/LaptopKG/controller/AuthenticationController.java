@@ -8,10 +8,14 @@ import com.example.LaptopKG.exception.UserAlreadyExistException;
 import com.example.LaptopKG.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -40,6 +44,14 @@ public class AuthenticationController{
     )
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthUserDto request) {
         return ResponseEntity.ok(service.authenticate(request));
+    }
+
+    @PostMapping("/refresh")
+    @Operation(
+            summary = "Обновление токена"
+    )
+    public ResponseEntity<AuthenticationResponse> refresh(String refreshToken) throws IOException {
+        return ResponseEntity.ok(service.refreshToken(refreshToken));
     }
 
     @GetMapping("/activate/{token}")

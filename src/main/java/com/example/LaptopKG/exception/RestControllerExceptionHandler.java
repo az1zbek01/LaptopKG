@@ -128,4 +128,19 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
         return ResponseEntityBuilder.build(error);
     }
 
+    @ExceptionHandler(TokenNotValidException.class)
+    public ResponseEntity<Object> handleTokenNotValid(TokenNotValidException e){
+        List<String> details = new ArrayList<>();
+        details.add(e.getMessage());
+
+        ApiError error = new ApiError(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST,
+                "Not valid",
+                details
+        );
+
+        return ResponseEntityBuilder.build(error);
+    }
+
 }
