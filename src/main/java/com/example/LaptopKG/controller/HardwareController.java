@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/hardware")
+@CrossOrigin(origins = "*")
 @Tag(
         name = "Контроллер для работы с железом",
         description = "В этом контроллеры есть возможности добавления и получения железа"
@@ -33,9 +34,8 @@ public class HardwareController {
         return ResponseEntity.ok(hardwareService.createHardware(requestHardwareDTO));
     }
 
-    @GetMapping
+    @GetMapping()
     @SecurityRequirement(name = "JWT")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(
             summary = "Получение всего железа"
     )

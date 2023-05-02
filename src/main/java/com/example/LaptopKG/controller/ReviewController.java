@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/reviews")
 @AllArgsConstructor
+@CrossOrigin(origins = "*")
 @Tag(
         name = "Контроллер для работы с отзывами",
         description = "В этом контроллере есть возможности добавления, обновления и удаления отзывов"

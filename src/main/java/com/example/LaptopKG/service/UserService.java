@@ -48,14 +48,14 @@ public class UserService {
             );
         Random random = new Random();
         var user = User.builder()
-                .status(Status.NOT_ACTIVATED)
+                .status(Status.ACTIVE) // change to NOT_ACTIVATED
                 .phoneNumber(request.getPhoneNumber())
                 .username(request.getUsername())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.ROLE_USER)
+                .role(Role.ROLE_ADMIN)
                 .token(String.valueOf(random.nextInt(1000, 9999)))
                 .build();
         repository.save(user);

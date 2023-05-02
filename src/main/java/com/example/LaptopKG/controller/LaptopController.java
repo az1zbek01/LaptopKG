@@ -23,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/laptops")
 @AllArgsConstructor
+@CrossOrigin(origins = "*")
 @Tag(
     name = "Контроллер для работы с ноутбуками",
     description = "В этом контроллеры есть возможности добавления, получения, обновления и удаления ноутбуков"

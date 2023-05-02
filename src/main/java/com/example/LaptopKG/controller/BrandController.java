@@ -17,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/brands")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 @Tag(
     name = "Контроллер для работы с брендами",
     description = "В этом контроллеры есть возможности добавления, получения и обновления брендов"
