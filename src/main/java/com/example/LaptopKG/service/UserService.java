@@ -51,7 +51,7 @@ public class UserService {
         if(repository.existsByEmail(request.getEmail()))
             throw new UserAlreadyExistException(
                     "email",
-                    "User with this email is already exists"
+                    "Пользователь с такой почтой уже существует"
             );
         if(repository.existsByUsername(request.getUsername()))
             throw new UserAlreadyExistException(
@@ -75,15 +75,15 @@ public class UserService {
 
         // Email message
         SimpleMailMessage activationEmail = new SimpleMailMessage();
-        activationEmail.setFrom("laptopkginai@gmail.com");
+        activationEmail.setFrom("specterplay2@gmail.com");
         activationEmail.setTo(user.getEmail());
-        activationEmail.setSubject("Account activation");
-        activationEmail.setText("To activate your account enter this code: " + user.getToken());
+        activationEmail.setSubject("Активация аккаунта");
+        activationEmail.setText("Для активации аккаунта введите следующий код: " + user.getToken());
 
         emailService.sendEmail(activationEmail);
-        log.info("Success sent email to " + user.getEmail());
+        log.info("Код успешно отправлен на почту " + user.getEmail());
 
-        return ResponseEntity.ok("Successfully registered! Your activate code was sent to email.");
+        return ResponseEntity.ok("Успешная регистрация! Ваш код активации был отправлен на почту.");
     }
 
     public AuthenticationResponse authenticate(AuthUserDto request) {
@@ -123,7 +123,7 @@ public class UserService {
 
     public AuthenticationResponse refreshToken(String refreshToken) throws IOException {
         if(!refreshTokenRepository.existsByToken(refreshToken)){
-            throw new TokenNotValidException("Token is invalid");
+            throw new TokenNotValidException("Токен не валидный");
         }
 
         final String userEmail;
@@ -131,7 +131,7 @@ public class UserService {
         var user = repository.findByEmail(userEmail).orElseThrow();
 
         if(!jwtService.isTokenValid(refreshToken, user)){
-            throw new TokenNotValidException("Token is invalid");
+            throw new TokenNotValidException("Токен не валидный");
         }
 
         // Find token in DB and update it to new generated
@@ -154,7 +154,7 @@ public class UserService {
 
         // Check user exists by token
         if (user.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Неверный код");
         }
 
         User activateUser = user.get();
@@ -165,7 +165,7 @@ public class UserService {
         // Set the activation token to null so it cannot be used again
         activateUser.setToken(null);
         repository.save(activateUser);
-        return ResponseEntity.ok().body("Account activated successfully");
+        return ResponseEntity.ok().body("Аккаунт успешно активирован!");
 
     }
 }
