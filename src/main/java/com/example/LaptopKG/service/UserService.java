@@ -92,9 +92,7 @@ public class UserService {
             )
         );
         var user = repository.findByEmail(request.getEmail())
-                .orElseThrow(
-                        () -> new NotFoundException("Email wasn't found")
-        );
+                .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         return AuthenticationResponse.builder()
@@ -108,9 +106,7 @@ public class UserService {
 
         userEmail = jwtService.extractUsername(refreshToken); // extract the user Email from token;
 
-        var user = repository.findByEmail(userEmail).orElseThrow(
-                () -> new NotFoundException("User with email " + userEmail + " wasn't found")
-        );
+        var user = repository.findByEmail(userEmail).orElseThrow();
 
         if(jwtService.isTokenValid(refreshToken, user)){
             return AuthenticationResponse.builder()
