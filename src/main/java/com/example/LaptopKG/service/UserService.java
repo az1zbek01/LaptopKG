@@ -6,9 +6,11 @@ import com.example.LaptopKG.dto.user.CreateUserDto;
 import com.example.LaptopKG.exception.NotFoundException;
 import com.example.LaptopKG.exception.TokenNotValidException;
 import com.example.LaptopKG.exception.UserAlreadyExistException;
+import com.example.LaptopKG.model.RefreshToken;
 import com.example.LaptopKG.model.User;
 import com.example.LaptopKG.model.enums.Role;
 import com.example.LaptopKG.model.enums.Status;
+import com.example.LaptopKG.repository.RefreshTokenRepository;
 import com.example.LaptopKG.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,6 +45,7 @@ public class UserService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final EmailServiceImpl emailService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public ResponseEntity<String> register(CreateUserDto request) throws UserAlreadyExistException {
         if(repository.existsByEmail(request.getEmail()))
@@ -95,6 +98,23 @@ public class UserService {
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
+
+        // Check if exists old refresh token in DB
+        if(refreshTokenRepository.existsByUserId(user.getId())){
+            // Update refresh token
+            RefreshToken refToken = refreshTokenRepository.findByUserId(user.getId());
+            refToken.setToken(refreshToken);
+            refreshTokenRepository.save(refToken);
+        }else{
+            // Save refresh new token in DB
+            refreshTokenRepository.save(
+                    RefreshToken.builder()
+                            .token(refreshToken)
+                            .userId(user.getId())
+                            .build()
+            );
+        }
+
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
@@ -102,20 +122,29 @@ public class UserService {
     }
 
     public AuthenticationResponse refreshToken(String refreshToken) throws IOException {
-        final String userEmail;
-
-        userEmail = jwtService.extractUsername(refreshToken); // extract the user Email from token;
-
-        var user = repository.findByEmail(userEmail).orElseThrow();
-
-        if(jwtService.isTokenValid(refreshToken, user)){
-            return AuthenticationResponse.builder()
-                    .accessToken(jwtService.generateToken(user))
-                    .refreshToken(jwtService.generateRefreshToken(user))
-                    .build();
+        if(!refreshTokenRepository.existsByToken(refreshToken)){
+            throw new TokenNotValidException("Token is invalid");
         }
 
-        throw new TokenNotValidException("Token is not valid");
+        final String userEmail;
+        userEmail = jwtService.extractUsername(refreshToken); // extract the user Email from token;
+        var user = repository.findByEmail(userEmail).orElseThrow();
+
+        if(!jwtService.isTokenValid(refreshToken, user)){
+            throw new TokenNotValidException("Token is invalid");
+        }
+
+        // Find token in DB and update it to new generated
+        RefreshToken refToken = refreshTokenRepository.findByToken(refreshToken);
+        var newRefreshToken = jwtService.generateRefreshToken(user);
+        refToken.setToken(newRefreshToken);
+        refreshTokenRepository.save(refToken);
+
+        // Return new access token and refresh token
+        return AuthenticationResponse.builder()
+                .accessToken(jwtService.generateToken(user))
+                .refreshToken(newRefreshToken)
+                .build();
     }
 
     public ResponseEntity<String> activateAccount(String token) {
