@@ -4,24 +4,33 @@ import com.example.LaptopKG.dto.user.AuthUserDto;
 import com.example.LaptopKG.dto.AuthenticationResponse;
 import com.example.LaptopKG.dto.user.CreateUserDto;
 import com.example.LaptopKG.exception.NotFoundException;
+import com.example.LaptopKG.exception.TokenNotValidException;
 import com.example.LaptopKG.exception.UserAlreadyExistException;
 import com.example.LaptopKG.model.User;
 import com.example.LaptopKG.model.enums.Role;
 import com.example.LaptopKG.model.enums.Status;
 import com.example.LaptopKG.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.Random;
 
@@ -71,7 +80,7 @@ public class UserService {
         emailService.sendEmail(activationEmail);
         log.info("Success sent email to " + user.getEmail());
 
-        return ResponseEntity.ok("Successfully registered!");
+        return ResponseEntity.ok("Successfully registered! Your activate code was sent to email.");
     }
 
     public AuthenticationResponse authenticate(AuthUserDto request) {
@@ -83,15 +92,30 @@ public class UserService {
             )
         );
         var user = repository.findByEmail(request.getEmail())
-                .orElseThrow(
-                        () -> new NotFoundException("Email wasn't found")
-        );
+                .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
-
-        return AuthenticationResponse
-                .builder()
-                .token(jwtToken)
+        var refreshToken = jwtService.generateRefreshToken(user);
+        return AuthenticationResponse.builder()
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
                 .build();
+    }
+
+    public AuthenticationResponse refreshToken(String refreshToken) throws IOException {
+        final String userEmail;
+
+        userEmail = jwtService.extractUsername(refreshToken); // extract the user Email from token;
+
+        var user = repository.findByEmail(userEmail).orElseThrow();
+
+        if(jwtService.isTokenValid(refreshToken, user)){
+            return AuthenticationResponse.builder()
+                    .accessToken(jwtService.generateToken(user))
+                    .refreshToken(jwtService.generateRefreshToken(user))
+                    .build();
+        }
+
+        throw new TokenNotValidException("Token is not valid");
     }
 
     public ResponseEntity<String> activateAccount(String token) {
