@@ -50,7 +50,7 @@ public class AuthenticationController{
     @Operation(
             summary = "Обновление токена"
     )
-    public ResponseEntity<AuthenticationResponse> refresh(String refreshToken) throws IOException {
+    public ResponseEntity<AuthenticationResponse> refresh(@RequestParam String refreshToken) throws IOException {
         return ResponseEntity.ok(service.refreshToken(refreshToken));
     }
 
