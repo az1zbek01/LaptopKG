@@ -16,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/notifications")
 @AllArgsConstructor
+@CrossOrigin(origins = "*")
 @Tag(
         name = "Контроллер для работы с уведомлениями",
         description = "В этом контроллере есть возможность получения уведомлений"

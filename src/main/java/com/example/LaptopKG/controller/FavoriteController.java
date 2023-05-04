@@ -17,6 +17,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/favorites")
+@CrossOrigin(origins = "*")
 @Tag(
         name = "Контроллер для работы с избранными ноутбуками",
         description = "В этом контроллеры есть возможности добавления и получения избранных ноутбуков"

@@ -1,6 +1,7 @@
 package com.example.LaptopKG.dto.user;
 
 import com.example.LaptopKG.model.User;
+import com.example.LaptopKG.model.enums.Role;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,6 +19,7 @@ public class GetUserDto {
     String firstName;
     String lastName;
     String imageUrl;
+    Role role;
 
     public static GetUserDto getUserDto(User user){
         return GetUserDto.builder()
@@ -28,6 +30,7 @@ public class GetUserDto {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .imageUrl(user.getImageUrl())
+                .role(user.getRole())
                 .build();
     }
 
