@@ -6,6 +6,7 @@ import com.example.LaptopKG.service.implementations.ReviewServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,7 +28,7 @@ public class ReviewController {
     @Operation(
             summary = "Добавление отзыва к ноутбуку"
     )
-    public ResponseEntity<String> addReview(@RequestBody RequestReviewDTO addReviewDto,
+    public ResponseEntity<String> addReview(@RequestBody @Valid RequestReviewDTO addReviewDto,
                                             @AuthenticationPrincipal User user){
         return reviewServiceImpl.addReview(addReviewDto, user);
     }
@@ -38,7 +39,7 @@ public class ReviewController {
             summary = "Изменение отзыва"
     )
     public ResponseEntity<String> updateReview(@PathVariable long id,
-                                               @RequestBody RequestReviewDTO updateReviewDto,
+                                               @RequestBody @Valid RequestReviewDTO updateReviewDto,
                                                @AuthenticationPrincipal User user){
         return reviewServiceImpl.updateReview(id, updateReviewDto, user);
     }
