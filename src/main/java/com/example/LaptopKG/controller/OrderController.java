@@ -21,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/orders")
 @AllArgsConstructor
+@CrossOrigin(origins = "*")
 @Tag(
         name = "Контроллер для работы с заказами",
         description = "В этом контроллере есть возможности добавления, получения, обновления и удаления заказов"

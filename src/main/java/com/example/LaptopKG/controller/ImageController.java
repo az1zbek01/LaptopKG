@@ -18,6 +18,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/image")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 @Tag(
         name = "Контроллер для работы с фото",
         description = "В этом контроллеры есть возможности добавления фото"
