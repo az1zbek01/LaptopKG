@@ -28,7 +28,7 @@ public class SecurityConfiguration {
             .disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/api/auth/**", "/api/laptops/**", "/api/hardware/**", "/api/brands/**",
-                        "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/api/types/**").permitAll()
+                        "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/api/types/**", "/api/password/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
