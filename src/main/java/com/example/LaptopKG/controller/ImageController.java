@@ -1,7 +1,7 @@
 package com.example.LaptopKG.controller;
 
 import com.example.LaptopKG.model.User;
-import com.example.LaptopKG.service.ImageService;
+import com.example.LaptopKG.service.implementations.ImageServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,7 +24,7 @@ import java.io.IOException;
         description = "В этом контроллеры есть возможности добавления фото"
 )
 public class ImageController {
-    private final ImageService imageService;
+    private final ImageServiceImpl imageServiceImpl;
 
     @PostMapping(value = "/upload/laptop/{laptopId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -34,7 +34,7 @@ public class ImageController {
     )
     public ResponseEntity<String> saveLaptopImage(@PathVariable("laptopId") Long laptopId,
                                                   @RequestPart MultipartFile file) throws IOException {
-        return imageService.saveForLaptop(laptopId, file);
+        return imageServiceImpl.saveForLaptop(laptopId, file);
     }
 
     @PostMapping(value = "/upload/myAvatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -44,6 +44,6 @@ public class ImageController {
     )
     public ResponseEntity<String> saveUserImage(@AuthenticationPrincipal User user,
                                                   @RequestPart MultipartFile file) throws IOException {
-        return imageService.saveForUser(user, file);
+        return imageServiceImpl.saveForUser(user, file);
     }
 }

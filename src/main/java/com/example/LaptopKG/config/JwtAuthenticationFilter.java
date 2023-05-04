@@ -1,7 +1,7 @@
 package com.example.LaptopKG.config;
 
 
-import com.example.LaptopKG.service.JwtService;
+import com.example.LaptopKG.service.implementations.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

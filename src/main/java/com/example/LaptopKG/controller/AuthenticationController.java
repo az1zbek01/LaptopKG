@@ -5,11 +5,9 @@ import com.example.LaptopKG.dto.AuthenticationResponse;
 import com.example.LaptopKG.dto.user.CreateUserDto;
 
 import com.example.LaptopKG.exception.UserAlreadyExistException;
-import com.example.LaptopKG.service.UserService;
+import com.example.LaptopKG.service.implementations.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +24,7 @@ import java.io.IOException;
 )
 public class AuthenticationController{
 
-    private final UserService service;
+    private final UserServiceImpl service;
 
     @PostMapping("/register")
     @Operation(

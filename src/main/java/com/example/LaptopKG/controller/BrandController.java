@@ -3,7 +3,7 @@ package com.example.LaptopKG.controller;
 
 import com.example.LaptopKG.dto.brand.RequestBrandDTO;
 import com.example.LaptopKG.dto.brand.ResponseBrandDTO;
-import com.example.LaptopKG.service.BrandService;
+import com.example.LaptopKG.service.implementations.BrandServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,14 +23,14 @@ import java.util.List;
     description = "В этом контроллеры есть возможности добавления, получения и обновления брендов"
 )
 public class BrandController {
-    private final BrandService brandService;
+    private final BrandServiceImpl brandServiceImpl;
 
     @GetMapping()
     @Operation(
             summary = "Получение всех брендов"
     )
     public List<ResponseBrandDTO> getAllBrands(){
-        return brandService.getAll();
+        return brandServiceImpl.getAll();
     }
 
     @GetMapping("/{id}")
@@ -38,7 +38,7 @@ public class BrandController {
             summary = "Получение бренда по айди"
     )
     public ResponseBrandDTO getBrandById(@PathVariable Long id){
-        return brandService.getById(id);
+        return brandServiceImpl.getById(id);
     }
 
     @GetMapping("/deleted")
@@ -48,7 +48,7 @@ public class BrandController {
             summary = "Получение всех удаленных брендов"
     )
     public List<ResponseBrandDTO> getAllDeletedBrands(){
-        return brandService.getAllDeletedBrands();
+        return brandServiceImpl.getAllDeletedBrands();
     }
 
     @PostMapping("/create")
@@ -58,7 +58,7 @@ public class BrandController {
             summary = "Добавление бренда"
     )
     public ResponseBrandDTO createBrand(@RequestBody RequestBrandDTO createBrandDto){
-        return brandService.createBrand(createBrandDto);
+        return brandServiceImpl.createBrand(createBrandDto);
     }
 
     @PutMapping("/{id}")
@@ -68,7 +68,7 @@ public class BrandController {
             summary = "Обновление бренда по айди"
     )
     public ResponseBrandDTO updateBrand(@PathVariable Long id, @RequestBody RequestBrandDTO updateBrandDto){
-        return brandService.updateBrand(id, updateBrandDto);
+        return brandServiceImpl.updateBrand(id, updateBrandDto);
     }
 
     @PutMapping("/restore/{id}")
@@ -78,7 +78,7 @@ public class BrandController {
             summary = "Восстановление бренда по айди"
     )
     public ResponseBrandDTO restoreBrandById(@PathVariable Long id) {
-        return brandService.restoreBrandById(id);
+        return brandServiceImpl.restoreBrandById(id);
     }
 
     @DeleteMapping("/{id}")
@@ -88,6 +88,6 @@ public class BrandController {
             summary = "Удаление бренда"
     )
     public ResponseEntity<String> deleteBrand(@PathVariable Long id){
-        return brandService.deleteBrand(id);
+        return brandServiceImpl.deleteBrand(id);
     }
 }
