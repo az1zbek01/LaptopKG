@@ -2,7 +2,7 @@ package com.example.LaptopKG.controller;
 
 
 import com.example.LaptopKG.dto.hardware.RequestHardwareDTO;
-import com.example.LaptopKG.service.HardwareService;
+import com.example.LaptopKG.service.implementations.HardwareServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 )
 public class HardwareController {
 
-    private final HardwareService hardwareService;
+    private final HardwareServiceImpl hardwareServiceImpl;
 
     @PostMapping()
     @SecurityRequirement(name = "JWT")
@@ -31,7 +31,7 @@ public class HardwareController {
             summary = "Добавление железа"
     )
     public ResponseEntity<?> createHardware(@RequestBody @Valid RequestHardwareDTO requestHardwareDTO){
-        return ResponseEntity.ok(hardwareService.createHardware(requestHardwareDTO));
+        return ResponseEntity.ok(hardwareServiceImpl.createHardware(requestHardwareDTO));
     }
 
     @GetMapping
@@ -41,7 +41,7 @@ public class HardwareController {
             summary = "Получение всего железа"
     )
     public ResponseEntity<?> getAllHardware(){
-        return ResponseEntity.ok(hardwareService.getAllHardware());
+        return ResponseEntity.ok(hardwareServiceImpl.getAllHardware());
     }
 
 }

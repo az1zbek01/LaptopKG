@@ -1,5 +1,6 @@
-package com.example.LaptopKG.service;
+package com.example.LaptopKG.service.implementations;
 
+import com.example.LaptopKG.service.EmailService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;

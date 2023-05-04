@@ -1,4 +1,4 @@
-package com.example.LaptopKG.service;
+package com.example.LaptopKG.service.implementations;
 
 
 import io.jsonwebtoken.Claims;

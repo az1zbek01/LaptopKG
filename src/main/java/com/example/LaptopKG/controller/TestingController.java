@@ -18,13 +18,15 @@ public class TestingController {
     @GetMapping("/getUser")
     @SecurityRequirement(name = "JWT")
     public ResponseEntity<GetUserDto> getUserDtoResponseEntity(@AuthenticationPrincipal User user){
-        return ResponseEntity.ok(new GetUserDto().getUserDto(user));
+        new GetUserDto();
+        return ResponseEntity.ok(GetUserDto.getUserDto(user));
     }
     @GetMapping("/getAdmin")
     @SecurityRequirement(name = "JWT")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<GetUserDto> getAdminDtoResponseEntity(@AuthenticationPrincipal User user){
-        return ResponseEntity.ok(new GetUserDto().getUserDto(user));
+        new GetUserDto();
+        return ResponseEntity.ok(GetUserDto.getUserDto(user));
     }
 
 }

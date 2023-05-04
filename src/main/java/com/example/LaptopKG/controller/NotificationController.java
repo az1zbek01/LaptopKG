@@ -2,7 +2,7 @@ package com.example.LaptopKG.controller;
 
 import com.example.LaptopKG.dto.notification.ResponseNotificationDTO;
 import com.example.LaptopKG.model.User;
-import com.example.LaptopKG.service.NotificationService;
+import com.example.LaptopKG.service.implementations.NotificationServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,7 +22,7 @@ import java.util.List;
         description = "В этом контроллере есть возможность получения уведомлений"
 )
 public class NotificationController {
-    private final NotificationService notificationService;
+    private final NotificationServiceImpl notificationServiceImpl;
 
     @GetMapping()
     @SecurityRequirement(name = "JWT")
@@ -30,7 +30,7 @@ public class NotificationController {
             summary = "Получение всех уведомлений авторизованного пользователя"
     )
     public List<ResponseNotificationDTO> getAllNotificationsByUser(@AuthenticationPrincipal User user){
-        return notificationService.getAllNotificationsByUser(user);
+        return notificationServiceImpl.getAllNotificationsByUser(user);
     }
 
     @GetMapping("/{id}")
@@ -38,9 +38,9 @@ public class NotificationController {
     @Operation(
             summary = "Получение уведомления по айди"
     )
-    public ResponseNotificationDTO getNotificationById(@PathVariable long id,
+    public ResponseNotificationDTO getNotificationById(@PathVariable Long id,
                                                        @AuthenticationPrincipal User user){
-        return notificationService.getNotificationById(id, user);
+        return notificationServiceImpl.getNotificationById(id, user);
     }
 
     @PutMapping()
@@ -49,7 +49,7 @@ public class NotificationController {
             summary = "Отметить все уведомления как прочитанное"
     )
     public List<ResponseNotificationDTO> markAllNotificationsAsReadByUser(@AuthenticationPrincipal User user){
-        return notificationService.markAllNotificationsAsReadByUser(user);
+        return notificationServiceImpl.markAllNotificationsAsReadByUser(user);
     }
 
     @PutMapping("/{id}")
@@ -57,9 +57,9 @@ public class NotificationController {
     @Operation(
             summary = "Отметить уведомление как прочитанное"
     )
-    public ResponseNotificationDTO markNotificationAsReadById(@PathVariable long id,
+    public ResponseNotificationDTO markNotificationAsReadById(@PathVariable Long id,
                                                               @AuthenticationPrincipal User user){
-        return notificationService.markNotificationAsReadById(id, user);
+        return notificationServiceImpl.markNotificationAsReadById(id, user);
     }
 
     @DeleteMapping("/{id}")
@@ -67,9 +67,9 @@ public class NotificationController {
     @Operation(
             summary = "Удалить уведомление по айди"
     )
-    public ResponseEntity<String> deleteNotificationById(@PathVariable long id,
+    public ResponseEntity<String> deleteNotificationById(@PathVariable Long id,
                                                          @AuthenticationPrincipal User user){
-        return notificationService.deleteNotificationById(id, user);
+        return notificationServiceImpl.deleteNotificationById(id, user);
     }
 
     @DeleteMapping()
@@ -78,6 +78,6 @@ public class NotificationController {
             summary = "Удалить все уведомления авторизованного пользователя"
     )
     public ResponseEntity<String> deleteAllNotificationsOfUser(@AuthenticationPrincipal User user){
-        return notificationService.deleteAllNotificationsOfUser(user);
+        return notificationServiceImpl.deleteAllNotificationsOfUser(user);
     }
 }
