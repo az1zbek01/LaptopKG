@@ -34,9 +34,9 @@ public class PasswordServiceImpl implements PasswordService {
 
         // Generate random token for password resetting, set new token to user and save user
         Random random = new Random();
-        String token = String.valueOf(random.nextInt(1000, 9999));
+        String token = String.valueOf(random.nextInt(100000, 999999));
         while(userRepository.existsByToken(token)){
-            token = String.valueOf(random.nextInt(1000, 9999));
+            token = String.valueOf(random.nextInt(100000, 999999));
         }
 
         user.setToken(token);
@@ -81,6 +81,10 @@ public class PasswordServiceImpl implements PasswordService {
         // Check if old password is correct
         if(!passwordEncoder.matches(changePasswordDTO.getOldPassword(), user.getPassword())){
             return ResponseEntity.badRequest().body("Старый пароль введен некорректно!");
+        }
+        // Check if new password and old password equals
+        if(passwordEncoder.matches(changePasswordDTO.getNewPassword(), user.getPassword())){
+            return ResponseEntity.badRequest().body("Новый пароль совпадает со старым!");
         }
         // Check if new password and password confirmation equals
         if(!changePasswordDTO.getNewPassword().equals(changePasswordDTO.getConfirmNewPassword())){
