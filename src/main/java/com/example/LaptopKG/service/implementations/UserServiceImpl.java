@@ -50,6 +50,11 @@ public class UserServiceImpl implements UserService {
                     "User with this username is already exists"
             );
         Random random = new Random();
+        String token = String.valueOf(random.nextInt(100000, 999999));
+        while(repository.existsByToken(token)){
+            token = String.valueOf(random.nextInt(100000, 999999));
+        }
+
         var user = User.builder()
                 .status(Status.NOT_ACTIVATED)
                 .phoneNumber(request.getPhoneNumber())
@@ -59,13 +64,13 @@ public class UserServiceImpl implements UserService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ROLE_USER)
-                .token(String.valueOf(random.nextInt(1000, 9999)))
+                .token(token)
                 .build();
         repository.save(user);
 
         // Email message
         SimpleMailMessage activationEmail = new SimpleMailMessage();
-        activationEmail.setFrom("specterplay2@gmail.com");
+        activationEmail.setFrom("laptopKG@gmail.com");
         activationEmail.setTo(user.getEmail());
         activationEmail.setSubject("Активация аккаунта");
         activationEmail.setText("Для активации аккаунта введите следующий код: " + user.getToken());
