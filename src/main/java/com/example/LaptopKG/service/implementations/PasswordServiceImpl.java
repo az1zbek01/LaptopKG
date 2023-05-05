@@ -39,7 +39,7 @@ public class PasswordServiceImpl implements PasswordService {
             token = String.valueOf(random.nextInt(1000, 9999));
         }
 
-        user.setToken(String.valueOf(random.nextInt(1000, 9999)));
+        user.setToken(token);
         userRepository.save(user);
 
         // Email message
