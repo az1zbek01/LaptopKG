@@ -68,7 +68,6 @@ public class UserServiceImpl implements UserService {
                 .build();
         repository.save(user);
 
-        // Email message
         SimpleMailMessage activationEmail = new SimpleMailMessage();
         activationEmail.setFrom("laptopKG@gmail.com");
         activationEmail.setTo(user.getEmail());
@@ -94,14 +93,11 @@ public class UserServiceImpl implements UserService {
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 
-        // Check if exists old refresh token in DB
         if(refreshTokenRepository.existsByUserId(user.getId())){
-            // Update refresh token
             RefreshToken refToken = refreshTokenRepository.findByUserId(user.getId());
             refToken.setToken(refreshToken);
             refreshTokenRepository.save(refToken);
         }else{
-            // Save refresh new token in DB
             refreshTokenRepository.save(
                     RefreshToken.builder()
                             .token(refreshToken)
@@ -122,20 +118,18 @@ public class UserServiceImpl implements UserService {
         }
 
         final String userEmail;
-        userEmail = jwtService.extractUsername(refreshToken); // extract the user Email from token;
+        userEmail = jwtService.extractUsername(refreshToken);
         var user = repository.findByEmail(userEmail).orElseThrow();
 
         if(!jwtService.isTokenValid(refreshToken, user)){
             throw new TokenNotValidException("Токен не валидный");
         }
 
-        // Find token in DB and update it to new generated
         RefreshToken refToken = refreshTokenRepository.findByToken(refreshToken);
         var newRefreshToken = jwtService.generateRefreshToken(user);
         refToken.setToken(newRefreshToken);
         refreshTokenRepository.save(refToken);
 
-        // Return new access token and refresh token
         return AuthenticationResponse.builder()
                 .accessToken(jwtService.generateToken(user))
                 .refreshToken(newRefreshToken)
@@ -143,21 +137,15 @@ public class UserServiceImpl implements UserService {
     }
 
     public ResponseEntity<String> activateAccount(String token) {
-
-        // Find the user associated with the activation token
         Optional<User> user = repository.findByToken(token);
 
-        // Check user exists by token
         if (user.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Неверный код");
         }
 
         User activateUser = user.get();
-
-        // Set account enabled
         activateUser.setStatus(Status.ACTIVE);
 
-        // Set the activation token to null so it cannot be used again
         activateUser.setToken(null);
         repository.save(activateUser);
         return ResponseEntity.ok().body("Аккаунт успешно активирован!");

@@ -29,7 +29,7 @@ public class ReviewController {
             summary = "Добавление отзыва к ноутбуку"
     )
     public ResponseEntity<String> addReview(@RequestBody @Valid RequestReviewDTO addReviewDto,
-                                            @AuthenticationPrincipal User user){
+                                            @AuthenticationPrincipal User user) {
         return reviewServiceImpl.addReview(addReviewDto, user);
     }
 
@@ -40,7 +40,7 @@ public class ReviewController {
     )
     public ResponseEntity<String> updateReview(@PathVariable long id,
                                                @RequestBody @Valid RequestReviewDTO updateReviewDto,
-                                               @AuthenticationPrincipal User user){
+                                               @AuthenticationPrincipal User user) {
         return reviewServiceImpl.updateReview(id, updateReviewDto, user);
     }
 
@@ -50,7 +50,7 @@ public class ReviewController {
             summary = "Удаление отзыва"
     )
     public ResponseEntity<String> deleteReview(@PathVariable long id,
-                                               @AuthenticationPrincipal User user){
+                                               @AuthenticationPrincipal User user) {
         return reviewServiceImpl.deleteReview(id, user);
     }
 }

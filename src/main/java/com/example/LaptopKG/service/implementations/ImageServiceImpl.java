@@ -27,7 +27,7 @@ public class ImageServiceImpl implements ImageService {
 
     public String saveImage(MultipartFile file) throws IOException {
         if (file.isEmpty()) {
-            throw new FileEmptyException("File is empty");
+            throw new FileEmptyException("Файл пустой");
         }
 
         final String urlKey = "cloudinary://753949556892917:SCszCjA1duCgeAaMxDP-7Qq3dP8@dja0nqat2";
@@ -35,7 +35,7 @@ public class ImageServiceImpl implements ImageService {
         File saveFile = Files.createTempFile(
                         System.currentTimeMillis() + "",
                         Objects.requireNonNull
-                                        (file.getOriginalFilename(), "File must have an extension")
+                                        (file.getOriginalFilename(), "Файл должен иметь расширени")
                                 .substring(file.getOriginalFilename().lastIndexOf("."))
                 )
                 .toFile();
@@ -51,18 +51,18 @@ public class ImageServiceImpl implements ImageService {
 
     public ResponseEntity<String> saveForLaptop(Long laptopId, MultipartFile file) throws IOException {
         if(!laptopRepository.existsById(laptopId)) {
-            return ResponseEntity.badRequest().body("Laptop with id " + laptopId + " wasn't found");
+            return ResponseEntity.badRequest().body("Ноутбук с айди " + laptopId + " не найден");
         }
 
         Laptop laptop = laptopRepository.findById(laptopId).get();
         laptop.setImageUrl(saveImage(file));
         laptopRepository.save(laptop);
-        return ResponseEntity.ok("Image was saved");
+        return ResponseEntity.ok("Фотография сохранена");
     }
 
     public ResponseEntity<String> saveForUser(User user, MultipartFile file) throws IOException {
             user.setImageUrl(saveImage(file));
             userRepository.save(user);
-            return ResponseEntity.ok("Image was saved");
+            return ResponseEntity.ok("Фотография сохранена");
     }
 }
