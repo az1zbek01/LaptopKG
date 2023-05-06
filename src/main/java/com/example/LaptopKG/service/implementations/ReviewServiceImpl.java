@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import static com.example.LaptopKG.dto.review.ResponseReviewDTO.toGetReviewDtoList;
@@ -27,27 +28,36 @@ public class ReviewServiceImpl implements ReviewService {
 
     //Review adding
     public ResponseEntity<String> addReview(RequestReviewDTO requestReviewDTO, User user){
-        //Check if laptop exists in DB by ID
-        if(!laptopRepository.existsById(requestReviewDTO.getLaptopId())){
-            //if laptop does not exist, return bad request
-            return ResponseEntity.badRequest().body("Laptop with id "
-                    + requestReviewDTO.getLaptopId() + " wasn't found");
-        }
         //Check if this user has already left review on this laptop
         if(reviewRepository.existsByLaptopIdAndUser(requestReviewDTO.getLaptopId(), user)){
             return ResponseEntity.badRequest().body("This user has already left review for the laptop with id "
                     + requestReviewDTO.getLaptopId());
         }
 
+        Laptop laptop = laptopRepository.findById(requestReviewDTO.getLaptopId()).
+                orElseThrow(
+                        () -> new NotFoundException("Laptop with id " +
+                                requestReviewDTO.getLaptopId() + " wasn't found")
+                );
+
         //Take info from DTO and save review
         reviewRepository.save(
                 Review.builder()
                         .score(requestReviewDTO.getScore())
                         .text(requestReviewDTO.getText())
-                        .laptop(laptopRepository.findById(requestReviewDTO.getLaptopId()).get())
+                        .laptop(laptop)
                         .user(user)
                         .build()
         );
+
+        List<Review> reviews = reviewRepository.findAllByLaptopId(laptop.getId());
+        double sum = 0;
+        for(Review review:reviews){
+            sum+=review.getScore();
+        }
+        laptop.setAverageScore(Double.parseDouble(new DecimalFormat("0.0").format(sum/reviews.size())
+                .replaceAll(",", ".")));
+        laptopRepository.save(laptop);
 
         //If everything is ok, return new review
         return ResponseEntity.ok("Review was added");
@@ -90,6 +100,17 @@ public class ReviewServiceImpl implements ReviewService {
         review.setScore(updateReviewDto.getScore());
         review.setText(updateReviewDto.getText());
         reviewRepository.save(review);
+
+        Laptop laptop = laptopRepository.findById(review.getLaptop().getId()).get();
+        List<Review> reviews = reviewRepository.findAllByLaptopId(laptop.getId());
+        double sum = 0;
+        for(Review review1:reviews){
+            sum+=review1.getScore();
+        }
+        laptop.setAverageScore(Double.parseDouble(new DecimalFormat("0.0").format(sum/reviews.size())
+                .replaceAll(",", ".")));
+        laptopRepository.save(laptop);
+
         return ResponseEntity.ok("Review was successfully updated");
     }
 

@@ -28,6 +28,8 @@ public class ResponseLaptopDTO {
     int guarantee;
     List<ResponseHardwareDTO> hardwareList;
 
+    Double averageScore;
+
     public static ResponseLaptopDTO toResponseLaptopDTO(Laptop laptop){
         return ResponseLaptopDTO.builder()
                 .id(laptop.getId())
@@ -39,6 +41,7 @@ public class ResponseLaptopDTO {
                 .category(laptop.getCategory().getCategory())
                 .guarantee(laptop.getGuarantee().getGuarantee())
                 .hardwareList(toGetHardwareDto(laptop.getHardwareList()))
+                .averageScore(laptop.getAverageScore())
                 .build();
     }
 
