@@ -32,7 +32,6 @@ public class OrderServiceImpl implements OrderService {
     private final LaptopRepository laptopRepository;
     private final NotificationRepository notificationRepository;
 
-    // Getting all orders of current user
     public List<ResponseOrderDTO> getAllOrdersOfUser(User user){
         return toResponseOrderDTO(orderRepository.findAllByUser(user)
                 .stream().filter(order -> order.getStatus() == Status.ACTIVE)
@@ -40,7 +39,6 @@ public class OrderServiceImpl implements OrderService {
         );
     }
 
-    // Getting all orders in DB
     public List<ResponseOrderDTO> getAllOrders(){
         return toResponseOrderDTO(orderRepository.findAll()
                 .stream().filter(order -> order.getStatus() == Status.ACTIVE)
@@ -48,7 +46,6 @@ public class OrderServiceImpl implements OrderService {
         );
     }
 
-    // Getting all deleted orders in DB
     public List<ResponseOrderDTO> getAllDeletedOrders(){
         return toResponseOrderDTO(orderRepository.findAll()
                 .stream().filter(order -> order.getStatus() == Status.DELETED)
@@ -56,7 +53,6 @@ public class OrderServiceImpl implements OrderService {
         );
     }
 
-    // Order adding
     public ResponseOrderDTO addOrder(RequestOrderDTO orderDTO, User user){
         // Get set of laptops by ids
         Set<Laptop> laptopsSet = new HashSet<>();
@@ -66,7 +62,6 @@ public class OrderServiceImpl implements OrderService {
             );
         }
 
-        // Mapping from DTO to Entity
         Order order = Order.builder()
                 .laptops(new ArrayList<>(laptopsSet))
                 .deliveryType(DeliveryType.of(orderDTO.getDeliveryType()))
@@ -76,10 +71,8 @@ public class OrderServiceImpl implements OrderService {
                 .user(user)
                 .build();
 
-        // Save order in DB
         orderRepository.save(order);
 
-        // Send notification to user about new order
         notificationRepository.save(
                 Notification.builder()
                         .header("Оформлен новый заказ!")
@@ -89,25 +82,19 @@ public class OrderServiceImpl implements OrderService {
                         .build()
         );
 
-        // Return order mapping it to DTO
         return toResponseOrderDTO(order);
     }
 
-    // Order status changing
     public ResponseEntity<String> changeOrderStatus(Long id, OrderStatus orderStatus, String message){
-        // Get order by id or throw exception if it doesn't exist
         Order order = orderRepository.findById(id)
                 .filter(o -> o.getStatus() == Status.ACTIVE)
                 .orElseThrow(
                         () -> new NotFoundException("Заказ с айди " + id + " не найден")
         );
 
-        // Change order status
         order.setOrderStatus(orderStatus);
-        // Save updated order
         orderRepository.save(order);
 
-        // If administrator wrote a message, send notification to user
         if(message != null){
             notificationRepository.save(
               Notification.builder()
@@ -119,14 +106,11 @@ public class OrderServiceImpl implements OrderService {
             );
         }
 
-        // return status 200 and message
         return ResponseEntity.ok("Заказ обновлён");
     }
 
 
-    // Order canceling by user
     public ResponseEntity<String> cancelOrder(Long id, User user){
-        // Get order if exists
         Order order = orderRepository.findById(id)
                 .filter(o -> o.getStatus() == Status.ACTIVE)
                 .filter(o -> o.getUser().equals(user))
@@ -134,16 +118,13 @@ public class OrderServiceImpl implements OrderService {
                         () -> new NotFoundException("Заказ с айди " + id + " не найден")
                 );
 
-        // Make order canceled and save it
         order.setOrderStatus(OrderStatus.CANCELED);
         orderRepository.save(order);
 
         return ResponseEntity.ok("Заказ отменён");
     }
 
-    // Order deleting
     public ResponseEntity<String> deleteOrder(Long id, User user){
-        // Get order if exists
         Order order = orderRepository.findById(id)
                 .filter(o -> o.getStatus() == Status.ACTIVE)
                 .filter(o -> o.getUser().equals(user))
@@ -151,7 +132,6 @@ public class OrderServiceImpl implements OrderService {
                         () -> new NotFoundException("Заказ с айди " + id + " не найден")
                 );
 
-        // Make order deleted and save it
         order.setStatus(Status.DELETED);
         orderRepository.save(order);
 

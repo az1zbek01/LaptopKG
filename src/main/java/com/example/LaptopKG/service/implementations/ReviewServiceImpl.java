@@ -26,9 +26,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final LaptopRepository laptopRepository;
 
-    //Review adding
     public ResponseEntity<String> addReview(RequestReviewDTO requestReviewDTO, User user){
-        //Check if this user has already left review on this laptop
         if(reviewRepository.existsByLaptopIdAndUser(requestReviewDTO.getLaptopId(), user)){
             return ResponseEntity.badRequest().body("This user has already left review for the laptop with id "
                     + requestReviewDTO.getLaptopId());
@@ -40,7 +38,6 @@ public class ReviewServiceImpl implements ReviewService {
                                 requestReviewDTO.getLaptopId() + " wasn't found")
                 );
 
-        //Take info from DTO and save review
         reviewRepository.save(
                 Review.builder()
                         .score(requestReviewDTO.getScore())
@@ -59,13 +56,10 @@ public class ReviewServiceImpl implements ReviewService {
                 .replaceAll(",", ".")));
         laptopRepository.save(laptop);
 
-        //If everything is ok, return new review
         return ResponseEntity.ok("Review was added");
     }
 
-    //Get reviews by laptop id
     public List<ResponseReviewDTO> getReviewsByLaptopId(Long id) {
-        // Check if laptop exists
         Laptop laptop = laptopRepository.findById(id)
                 .orElseThrow(
                 () -> new NotFoundException("Laptop with id " + id + " wasn't found")
@@ -74,29 +68,23 @@ public class ReviewServiceImpl implements ReviewService {
             throw new NotFoundException("Laptop with id " + id + " wasn't found");
         }
 
-        //Return list of reviews on certain laptop
         return toGetReviewDtoList(reviewRepository.findAllByLaptopId(id));
     }
 
-    //Review updating
     public ResponseEntity<String> updateReview(long id,
                                                RequestReviewDTO updateReviewDto,
                                                User user) {
 
-        //Check if review exists by ID
         if(!reviewRepository.existsById(id)){
             return ResponseEntity.badRequest().body("Review with id " + id + " wasn't found");
         }
 
-        //Find review in DB and get it
         Review review = reviewRepository.findById(id).get();
 
-        //Check If USER is not the owner of the review and is not ADMIN and return bad request
         if(!review.getUser().getEmail().equals(user.getEmail()) && user.getRole() != Role.ROLE_ADMIN){
             return ResponseEntity.badRequest().body("Only review owner can update review");
         }
 
-        //If USER is the owner of the review or admin, then we take info from DTO and save Review
         review.setScore(updateReviewDto.getScore());
         review.setText(updateReviewDto.getText());
         reviewRepository.save(review);
@@ -114,22 +102,16 @@ public class ReviewServiceImpl implements ReviewService {
         return ResponseEntity.ok("Review was successfully updated");
     }
 
-    //Review deleting
     public ResponseEntity<String> deleteReview(long id, User user) {
-        // Check if review exists by id
         if(!reviewRepository.existsById(id)){
-            // If review doesn't exist we return bad request
             return ResponseEntity.badRequest().body("Review with id " + id + " wasn't found");
         }
-        // If review exists, we get it from DB
         Review review = reviewRepository.findById(id).get();
 
-        // Check If USER is not the owner of the review and is not ADMIN and return bad request
         if(!review.getUser().getEmail().equals(user.getEmail()) && user.getRole() != (Role.ROLE_ADMIN)){
             return ResponseEntity.badRequest().body("Only review owner can delete review");
         }
 
-        // If everything is ok, we delete review and return status 200
         reviewRepository.deleteById(id);
         return ResponseEntity.ok("Review was deleted");
     }
