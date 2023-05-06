@@ -51,5 +51,7 @@ public class Laptop extends BaseEntity {
     @JoinColumn(name = "brand_id")
     Brand brand;
 
-    private String imageUrl;
+    String imageUrl;
+
+    Double averageScore;
 }
