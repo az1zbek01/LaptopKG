@@ -3,7 +3,7 @@ package com.example.LaptopKG.controller;
 import com.example.LaptopKG.dto.favorite.RequestFavoriteDTO;
 import com.example.LaptopKG.dto.favorite.ResponseFavoriteDTO;
 import com.example.LaptopKG.model.User;
-import com.example.LaptopKG.service.FavoriteService;
+import com.example.LaptopKG.service.implementations.FavoriteServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +23,7 @@ import java.util.List;
         description = "В этом контроллеры есть возможности добавления и получения избранных ноутбуков"
 )
 public class FavoriteController {
-    private final FavoriteService favoriteService;
+    private final FavoriteServiceImpl favoriteServiceImpl;
 
     @GetMapping()
     @SecurityRequirement(name = "JWT")
@@ -31,7 +31,7 @@ public class FavoriteController {
             summary = "Получение всех избранных ноутбуков пользователя"
     )
     public List<ResponseFavoriteDTO> getAllFavoritesOfUser(@AuthenticationPrincipal User user){
-        return favoriteService.getAllFavoritesOfUser(user);
+        return favoriteServiceImpl.getAllFavoritesOfUser(user);
     }
 
     @GetMapping("/{id}")
@@ -39,8 +39,8 @@ public class FavoriteController {
     @Operation(
             summary = "Получение избранного по айди"
     )
-    public ResponseFavoriteDTO getFavoriteById(@PathVariable long id){
-        return favoriteService.getFavoriteById(id);
+    public ResponseFavoriteDTO getFavoriteById(@PathVariable Long id){
+        return favoriteServiceImpl.getFavoriteById(id);
     }
 
     @PostMapping()
@@ -50,7 +50,7 @@ public class FavoriteController {
     )
     public ResponseFavoriteDTO addFavorite(@RequestBody RequestFavoriteDTO requestFavoriteDTO,
                                            @AuthenticationPrincipal User user){
-        return favoriteService.addFavorite(requestFavoriteDTO, user);
+        return favoriteServiceImpl.addFavorite(requestFavoriteDTO, user);
     }
 
     @DeleteMapping("/{id}")
@@ -59,7 +59,7 @@ public class FavoriteController {
             summary = "Удаление из избранного"
     )
     public ResponseEntity<String> deleteFavoriteById(@PathVariable Long id){
-        return favoriteService.deleteFavoriteById(id);
+        return favoriteServiceImpl.deleteFavoriteById(id);
     }
 
 }

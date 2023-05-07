@@ -5,13 +5,15 @@ import com.example.LaptopKG.dto.AuthenticationResponse;
 import com.example.LaptopKG.dto.user.CreateUserDto;
 
 import com.example.LaptopKG.exception.UserAlreadyExistException;
-import com.example.LaptopKG.service.UserService;
+import com.example.LaptopKG.service.implementations.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 )
 public class AuthenticationController{
 
-    private final UserService service;
+    private final UserServiceImpl service;
 
     @PostMapping("/register")
     @Operation(
@@ -40,6 +42,14 @@ public class AuthenticationController{
     )
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthUserDto request) {
         return ResponseEntity.ok(service.authenticate(request));
+    }
+
+    @PostMapping("/refresh")
+    @Operation(
+            summary = "Обновление токена"
+    )
+    public ResponseEntity<AuthenticationResponse> refresh(@RequestParam String refreshToken) throws IOException {
+        return ResponseEntity.ok(service.refreshToken(refreshToken));
     }
 
     @GetMapping("/activate/{token}")

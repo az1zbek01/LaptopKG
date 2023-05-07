@@ -1,4 +1,4 @@
-package com.example.LaptopKG.service;
+package com.example.LaptopKG.service.implementations;
 
 
 import io.jsonwebtoken.Claims;
@@ -23,7 +23,10 @@ public class JwtService {
     private String jwtSecret;
 
     @Value(value = "${app.jwtExpirationInMs}")
-    private int jwtExpirationInMs;
+    private long jwtExpirationInMs;
+
+    @Value(value = "${app.refreshExpirationInMs}")
+    private long refreshExpirationInMs;
 
     // to get Username from Claims
     public String extractUsername(String token) {
@@ -39,19 +42,26 @@ public class JwtService {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    public String generateToken(
-            Map<String, Object> extractClaims,
-            UserDetails userDetails
-    ) {
+    public String generateToken(Map<String, Object> extractClaims,
+                                UserDetails userDetails) {
+        return buildToken(extractClaims, userDetails, jwtExpirationInMs);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        return buildToken(new HashMap<>(), userDetails, refreshExpirationInMs);
+    }
+
+    private String buildToken(Map<String, Object> extractClaims,
+                              UserDetails userDetails,
+                              long expiration){
         return Jwts
                 .builder()
                 .setClaims(extractClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
-
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails){

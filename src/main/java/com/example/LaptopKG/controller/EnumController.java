@@ -1,12 +1,11 @@
 package com.example.LaptopKG.controller;
 
 
-import com.example.LaptopKG.service.EnumService;
+import com.example.LaptopKG.service.implementations.EnumServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
         description = "В этом контроллеры есть возможности получения всех enum'ов"
 )
 public class EnumController {
-    private final EnumService enumService;
+    private final EnumServiceImpl enumServiceImpl;
 
     @GetMapping("/{type}")
     @Operation(
@@ -30,7 +29,7 @@ public class EnumController {
                                        @Parameter(description = "(category, delivery-type, guarantee, " +
                                                "hardware-type, order-status, payment-type, status)")
                                            String type){
-        return ResponseEntity.ok(enumService.getListByType(type));
+        return ResponseEntity.ok(enumServiceImpl.getListByType(type));
     }
 
 
