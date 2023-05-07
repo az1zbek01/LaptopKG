@@ -54,33 +54,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public ResponseOrderDTO addOrder(RequestOrderDTO orderDTO, User user){
-        // Get set of laptops by ids
-        Set<Laptop> laptopsSet = new HashSet<>();
-        for(long id:orderDTO.getLaptops()) {
-            laptopsSet.add(laptopRepository.findById(id)
-                    .orElseThrow(() -> new LaptopNotFoundException("Ноутбук с айди " + id + " не найден"))
-            );
-        }
-
-        Order order = Order.builder()
-                .laptops(new ArrayList<>(laptopsSet))
-                .deliveryType(DeliveryType.of(orderDTO.getDeliveryType()))
-                .paymentType(PaymentType.of(orderDTO.getPaymentType()))
-                .orderStatus(OrderStatus.NEW)
-                .status(Status.ACTIVE)
-                .user(user)
-                .build();
-
+        Set<Laptop> laptopsSet = constructLaptopsSet(orderDTO);
+        Order order = convertToOrder(orderDTO, user, laptopsSet);
         orderRepository.save(order);
 
-        notificationRepository.save(
-                Notification.builder()
-                        .header("Оформлен новый заказ!")
-                        .message("Вы оформили новый заказ на ноутбуки, подробнее можете узнать в истории заказов.")
-                        .status(Status.ACTIVE)
-                        .user(user)
-                        .build()
-        );
+        sendNotification("Оформлен новый заказ!",
+            "Вы оформили новый заказ на ноутбуки, подробнее можете узнать в истории заказов.",
+                    user);
 
         return toResponseOrderDTO(order);
     }
@@ -96,14 +76,9 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         if(message != null){
-            notificationRepository.save(
-              Notification.builder()
-                      .header("Обновлён статус заказа!")
-                      .message(message)
-                      .user(order.getUser())
-                      .status(Status.ACTIVE)
-                      .build()
-            );
+            sendNotification("Обновлен статус заказа!",
+                    message,
+                    order.getUser());
         }
 
         return ResponseEntity.ok("Заказ обновлён");
@@ -111,13 +86,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     public ResponseEntity<String> cancelOrder(Long id, User user){
-        Order order = orderRepository.findById(id)
-                .filter(o -> o.getStatus() == Status.ACTIVE)
-                .filter(o -> o.getUser().equals(user))
-                .orElseThrow(
-                        () -> new NotFoundException("Заказ с айди " + id + " не найден")
-                );
-
+        Order order = findOrderByIdAndUser(id, user);
         order.setOrderStatus(OrderStatus.CANCELED);
         orderRepository.save(order);
 
@@ -125,17 +94,53 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public ResponseEntity<String> deleteOrder(Long id, User user){
-        Order order = orderRepository.findById(id)
+        Order order = findOrderByIdAndUser(id, user);
+        order.setStatus(Status.DELETED);
+        orderRepository.save(order);
+
+        return ResponseEntity.ok("Заказ удалён");
+    }
+
+    private Order findOrderByIdAndUser(Long id, User user) {
+        return orderRepository.findById(id)
                 .filter(o -> o.getStatus() == Status.ACTIVE)
                 .filter(o -> o.getUser().equals(user))
                 .orElseThrow(
                         () -> new NotFoundException("Заказ с айди " + id + " не найден")
                 );
+    }
 
-        order.setStatus(Status.DELETED);
-        orderRepository.save(order);
+    private Set<Laptop> constructLaptopsSet(RequestOrderDTO orderDTO) {
+        Set<Laptop> laptopsSet = new HashSet<>();
+        for(long id:orderDTO.getLaptops()) {
+            laptopsSet.add(laptopRepository.findById(id)
+                    .orElseThrow(() -> new LaptopNotFoundException("Ноутбук с айди " + id + " не найден"))
+            );
+        }
 
-        return ResponseEntity.ok("Заказ удалён");
+        return laptopsSet;
+    }
+
+    private void sendNotification(String header, String message, User user) {
+        notificationRepository.save(
+                Notification.builder()
+                        .header(header)
+                        .message(message)
+                        .status(Status.ACTIVE)
+                        .user(user)
+                        .build()
+        );
+    }
+
+    private Order convertToOrder(RequestOrderDTO orderDTO, User user, Set<Laptop> laptopsSet) {
+        return Order.builder()
+                .laptops(new ArrayList<>(laptopsSet))
+                .deliveryType(DeliveryType.of(orderDTO.getDeliveryType()))
+                .paymentType(PaymentType.of(orderDTO.getPaymentType()))
+                .orderStatus(OrderStatus.NEW)
+                .status(Status.ACTIVE)
+                .user(user)
+                .build();
     }
 
 }

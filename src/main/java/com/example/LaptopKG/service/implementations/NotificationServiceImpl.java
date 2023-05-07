@@ -21,10 +21,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
 
     public List<ResponseNotificationDTO> getAllNotificationsByUser(User user){
-        return toGetNotificationDto(notificationRepository.findAllByUser(user)
-                .stream().filter(notification -> notification.getStatus() == Status.ACTIVE)
-                        .toList()
-                );
+        return toGetNotificationDto(findNotificationsByUser(user));
     }
 
     public ResponseNotificationDTO getNotificationById(Long id, User user){
@@ -53,11 +50,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     public ResponseNotificationDTO markNotificationAsReadById(Long id, User user){
-        Notification notification = notificationRepository.findById(id)
-                .filter(n -> n.getUser().equals(user))
-                .orElseThrow(
-                () -> new NotFoundException("Уведомление с айди " + id + " не найдено")
-        );
+        Notification notification = findNotificationByIdAndUser(id, user);
 
         notification.setRead(true);
         notificationRepository.save(notification);
@@ -66,11 +59,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     public ResponseEntity<String> deleteNotificationById(Long id, User user){
-        Notification notification = notificationRepository.findById(id)
-                .filter(n -> n.getUser().equals(user))
-                .orElseThrow(
-                () -> new NotFoundException("Уведомление с айди " + id + " не найдено")
-        );
+        Notification notification = findNotificationByIdAndUser(id, user);
 
         notification.setStatus(Status.DELETED);
         notificationRepository.save(notification);
@@ -79,10 +68,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     public ResponseEntity<String> deleteAllNotificationsOfUser(User user){
-        List<Notification> notifications = notificationRepository.findAllByUser(user)
-                .stream()
-                .filter(notification -> notification.getStatus() == Status.ACTIVE)
-                        .toList();
+        List<Notification> notifications = findNotificationsByUser(user);
 
         for(Notification notification:notifications){
             notification.setStatus(Status.DELETED);
@@ -90,5 +76,20 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         return ResponseEntity.ok("Уведомления удалены");
+    }
+
+    private List<Notification> findNotificationsByUser(User user) {
+        return notificationRepository.findAllByUser(user)
+                .stream()
+                .filter(notification -> notification.getStatus() == Status.ACTIVE)
+                .toList();
+    }
+
+    private Notification findNotificationByIdAndUser(Long id, User user) {
+        return notificationRepository.findById(id)
+                .filter(n -> n.getUser().equals(user))
+                .orElseThrow(
+                        () -> new NotFoundException("Уведомление с айди " + id + " не найдено")
+                );
     }
 }

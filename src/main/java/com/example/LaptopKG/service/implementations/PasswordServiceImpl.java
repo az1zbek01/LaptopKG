@@ -31,12 +31,7 @@ public class PasswordServiceImpl implements PasswordService {
                         () -> new NotFoundException("Пользователь с почтой " + userEmail + " не найден")
                 );
 
-        Random random = new Random();
-        String token = String.valueOf(random.nextInt(100000, 999999));
-        while(userRepository.existsByToken(token)){
-            token = String.valueOf(random.nextInt(100000, 999999));
-        }
-
+        String token = generateToken();
         user.setToken(token);
         userRepository.save(user);
 
@@ -86,5 +81,15 @@ public class PasswordServiceImpl implements PasswordService {
         userRepository.save(user);
 
         return ResponseEntity.ok("Пароль успешно сменен!");
+    }
+
+    private String generateToken(){
+        Random random = new Random();
+        String token = String.valueOf(random.nextInt(100000, 999999));
+        while(userRepository.existsByToken(token)){
+            token = String.valueOf(random.nextInt(100000, 999999));
+        }
+
+        return token;
     }
 }

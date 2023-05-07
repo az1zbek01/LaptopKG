@@ -39,7 +39,7 @@ public class FavoriteController {
     @Operation(
             summary = "Получение избранного по айди"
     )
-    public ResponseFavoriteDTO getFavoriteById(@PathVariable long id){
+    public ResponseFavoriteDTO getFavoriteById(@PathVariable Long id){
         return favoriteServiceImpl.getFavoriteById(id);
     }
 

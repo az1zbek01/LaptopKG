@@ -10,8 +10,8 @@ import java.util.List;
 public interface ReviewService {
     ResponseEntity<String> addReview(RequestReviewDTO requestReviewDTO, User user);
     List<ResponseReviewDTO> getReviewsByLaptopId(Long id);
-    ResponseEntity<String> updateReview(long id, RequestReviewDTO updateReviewDto, User user);
-    ResponseEntity<String> deleteReview(long id, User user);
+    ResponseEntity<String> updateReview(Long id, RequestReviewDTO updateReviewDto, User user);
+    ResponseEntity<String> deleteReview(Long id, User user);
 
 
 }

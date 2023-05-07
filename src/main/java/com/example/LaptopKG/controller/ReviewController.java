@@ -38,7 +38,7 @@ public class ReviewController {
     @Operation(
             summary = "Изменение отзыва"
     )
-    public ResponseEntity<String> updateReview(@PathVariable long id,
+    public ResponseEntity<String> updateReview(@PathVariable Long id,
                                                @RequestBody @Valid RequestReviewDTO updateReviewDto,
                                                @AuthenticationPrincipal User user) {
         return reviewServiceImpl.updateReview(id, updateReviewDto, user);
@@ -49,7 +49,7 @@ public class ReviewController {
     @Operation(
             summary = "Удаление отзыва"
     )
-    public ResponseEntity<String> deleteReview(@PathVariable long id,
+    public ResponseEntity<String> deleteReview(@PathVariable Long id,
                                                @AuthenticationPrincipal User user) {
         return reviewServiceImpl.deleteReview(id, user);
     }

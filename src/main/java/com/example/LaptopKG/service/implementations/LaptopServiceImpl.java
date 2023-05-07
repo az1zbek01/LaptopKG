@@ -33,76 +33,41 @@ public class LaptopServiceImpl implements LaptopService {
     private final HardwareRepository hardwareRepository;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
-    private final EntityManager entityManager;
 
     public List<ResponseLaptopDTO> getAllLaptops() {
-        return toResponseLaptopDTO(
-            laptopRepository.findAll()
-                .stream()
-                .filter(laptop -> laptop.getStatus() == Status.ACTIVE)
-                .collect(Collectors.toList())
-        );
+        return toResponseLaptopDTO(findAllActiveLaptops());
     }
 
     public Page<ResponseLaptopDTO> getAllLaptops(Pageable pageable) {
-        List<ResponseLaptopDTO> laptops = toResponseLaptopDTO(
-            laptopRepository.findAll()
-                .stream()
-                .filter(laptop -> laptop.getStatus() == Status.ACTIVE)
-                .collect(Collectors.toList())
-        );
-
+        List<ResponseLaptopDTO> laptops = toResponseLaptopDTO(findAllActiveLaptops());
         return new PageImpl<>(laptops, pageable, laptops.size());
     }
 
     public ResponseLaptopDTO getLaptopById(Long id) {
-        Laptop laptop = laptopRepository.findById(id)
-                .filter(l -> l.getStatus() == (Status.ACTIVE))
-                .orElseThrow(
-                        () -> new LaptopNotFoundException("Ноутбук с id " + id + " не найден")
-                );
-
+        Laptop laptop = findLaptopById(id);
         return toResponseLaptopDTO(laptop);
     }
 
     public List<ResponseLaptopDTO> getAllDeletedLaptops() {
         return toResponseLaptopDTO(laptopRepository.findAll()
                 .stream()
-                .filter(brand -> brand.getStatus() == Status.DELETED)
+                .filter(laptop -> laptop.getStatus() == Status.DELETED)
                 .collect(Collectors.toList())
         );
     }
 
     public List<ResponseLaptopDTO> getAllWithSearchByQuery(String query){
-        if(query != null)
+        if(query != null) {
             return toResponseLaptopDTO(laptopRepository.findAllByNameContainsIgnoreCaseOrDescriptionContainsIgnoreCase(query, query));
+        }
 
         return toResponseLaptopDTO(laptopRepository.findAll());
     }
 
     public ResponseLaptopDTO createLaptop(RequestLaptopDTO requestLaptopDTO) {
-        Set<Hardware> hardwareSet = new HashSet<>();
-        for (long id: requestLaptopDTO.getHardwareIds()) {
-            hardwareSet.add(hardwareRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException("Железо с айди " + id + " не было найдено"))
-            );
-        }
-        Laptop laptop = Laptop.builder()
-                .hardwareList(new ArrayList<>(hardwareSet))
-                .description(requestLaptopDTO.getDescription())
-                .price(requestLaptopDTO.getPrice())
-                .amount(requestLaptopDTO.getAmount())
-                .brand(brandRepository.findById(requestLaptopDTO.getBrandId())
-                        .orElseThrow(
-                            () -> new NotFoundException("Brand with id " + requestLaptopDTO.getBrandId() + " wasn't found")
-                        )
-                )
-                .name(requestLaptopDTO.getName())
-                .category(Category.of(requestLaptopDTO.getCategory()))
-                .guarantee(Guarantee.of(requestLaptopDTO.getGuarantee()))
-                .status(Status.ACTIVE)
-                .build();
+        Set<Hardware> hardwareSet = constructHarwareSet(requestLaptopDTO);
 
+        Laptop laptop = convertToLaptop(requestLaptopDTO, hardwareSet);
         laptopRepository.save(laptop);
 
         List<User> users = userRepository.findAll()
@@ -110,47 +75,19 @@ public class LaptopServiceImpl implements LaptopService {
                 .filter(user -> user.getStatus() == Status.ACTIVE)
                 .toList();
 
-        for(User user: users){
-            Notification notification = new Notification();
-            notification.setUser(user);
-            notification.setHeader("Добавлен новый ноутбук!");
-            notification.setMessage("В наш магазин был добавлен ноутбук бренда " + laptop.getBrand().getName() +
-                    "! Можете посмотреть более подробную информацию в списке ноутбуков.");
-            notification.setStatus(Status.ACTIVE);
-            notificationRepository.save(notification);
-        }
+        sendNotificationsToAllUsers(users, laptop.getBrand().getName());
 
         return toResponseLaptopDTO(laptop);
     }
 
     public ResponseLaptopDTO updateLaptop(Long id, RequestLaptopDTO updateLaptopDto) {
-
         if(!laptopRepository.existsById(id)){
-            throw new LaptopNotFoundException("Laptop with id " + id + " wasn't found");
+            throw new LaptopNotFoundException("Ноутбук с айди " + id + " не найден");
         }
 
-        Set<Hardware> hardwareSet = new HashSet<>();
-        for (long hardId: updateLaptopDto.getHardwareIds()) {
-            hardwareSet.add(hardwareRepository.findById(hardId)
-                    .orElseThrow(() -> new NotFoundException("Железо с айди " + hardId + " не было найдено"))
-            );
-        }
+        Set<Hardware> hardwareSet = constructHarwareSet(updateLaptopDto);
 
-        Laptop laptop = Laptop.builder()
-                .hardwareList(new ArrayList<>(hardwareSet))
-                .description(updateLaptopDto.getDescription())
-                .price(updateLaptopDto.getPrice())
-                .amount(updateLaptopDto.getAmount())
-                .brand(brandRepository.findById(updateLaptopDto.getBrandId())
-                        .orElseThrow(
-                                () -> new NotFoundException("Brand with id " + updateLaptopDto.getBrandId() + " wasn't found")
-                        )
-                )
-                .name(updateLaptopDto.getName())
-                .category(Category.of(updateLaptopDto.getCategory()))
-                .guarantee(Guarantee.of(updateLaptopDto.getGuarantee()))
-                .build();
-
+        Laptop laptop = convertToLaptop(updateLaptopDto, hardwareSet);
         laptop.setId(id);
         laptopRepository.save(laptop);
 
@@ -159,10 +96,11 @@ public class LaptopServiceImpl implements LaptopService {
 
     public ResponseLaptopDTO restoreLaptopById(Long id){
         Laptop laptop = laptopRepository.findById(id)
-                .filter(b -> b.getStatus() == Status.DELETED)
+                .filter(l -> l.getStatus() == Status.DELETED)
                 .orElseThrow(
-                        () -> new AlreadyExistException("Laptop with id " + id + " already active")
+                        () -> new AlreadyExistException("Ноутбук с айди " + id + " уже активен")
                 );
+
 
         laptop.setStatus(Status.ACTIVE);
         laptopRepository.save(laptop);
@@ -171,13 +109,66 @@ public class LaptopServiceImpl implements LaptopService {
     }
 
     public ResponseEntity<String> deleteLaptopById(Long id) {
-        Laptop laptop = laptopRepository.findById(id).filter(l -> l.getStatus() == Status.ACTIVE)
-                .orElseThrow(
-                    () -> new LaptopNotFoundException("Ноутбук с id " + id + " не найден")
-                );
+        Laptop laptop = findLaptopById(id);
+
         laptop.setStatus(Status.DELETED);
         laptopRepository.save(laptop);
 
-        return ResponseEntity.ok("Laptop was successfully deleted");
+        return ResponseEntity.ok("Ноутбук успешно удален");
+    }
+
+    private List<Laptop> findAllActiveLaptops() {
+        return laptopRepository.findAll()
+                .stream()
+                .filter(laptop -> laptop.getStatus() == Status.ACTIVE)
+                .collect(Collectors.toList());
+    }
+
+    private Laptop findLaptopById(Long id){
+        return laptopRepository.findById(id)
+                .filter(l -> l.getStatus() == (Status.ACTIVE))
+                .orElseThrow(
+                        () -> new LaptopNotFoundException("Ноутбук с id " + id + " не найден")
+                );
+    }
+
+    private void sendNotificationsToAllUsers(List<User> users, String brand) {
+        for(User user: users){
+            Notification notification = new Notification();
+            notification.setUser(user);
+            notification.setHeader("Добавлен новый ноутбук!");
+            notification.setMessage("В наш магазин был добавлен ноутбук бренда " + brand +
+                    "! Можете посмотреть более подробную информацию в списке ноутбуков.");
+            notification.setStatus(Status.ACTIVE);
+            notificationRepository.save(notification);
+        }
+    }
+
+    private Set<Hardware> constructHarwareSet(RequestLaptopDTO requestLaptopDTO){
+        Set<Hardware> hardwareSet = new HashSet<>();
+        for (long hardId: requestLaptopDTO.getHardwareIds()) {
+            hardwareSet.add(hardwareRepository.findById(hardId)
+                    .orElseThrow(() -> new NotFoundException("Железо с айди " + hardId + " не было найдено"))
+            );
+        }
+        return hardwareSet;
+    }
+
+    private Laptop convertToLaptop(RequestLaptopDTO requestLaptopDTO, Set<Hardware> hardwareSet){
+        return Laptop.builder()
+                .hardwareList(new ArrayList<>(hardwareSet))
+                .description(requestLaptopDTO.getDescription())
+                .price(requestLaptopDTO.getPrice())
+                .amount(requestLaptopDTO.getAmount())
+                .brand(brandRepository.findById(requestLaptopDTO.getBrandId())
+                        .orElseThrow(
+                                () -> new NotFoundException("Бренд с айди " + requestLaptopDTO.getBrandId() + " не найден")
+                        )
+                )
+                .name(requestLaptopDTO.getName())
+                .category(Category.of(requestLaptopDTO.getCategory()))
+                .guarantee(Guarantee.of(requestLaptopDTO.getGuarantee()))
+                .status(Status.ACTIVE)
+                .build();
     }
 }
