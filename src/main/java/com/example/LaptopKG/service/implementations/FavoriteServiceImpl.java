@@ -36,12 +36,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     public ResponseFavoriteDTO getFavoriteById(Long id) {
-        Favorite favorite = favoriteRepository.findById(id)
-                .filter(f -> f.getStatus() == Status.ACTIVE)
-                .orElseThrow(
-                        () -> new NotFoundException("Избранное с id " + id + " не найдено")
-                );
-
+        Favorite favorite = findFavoriteById(id);
         return toGetFavoriteDto(favorite);
     }
 
@@ -53,7 +48,31 @@ public class FavoriteServiceImpl implements FavoriteService {
             return toGetFavoriteDto(favorite);
         }
 
-        Favorite favorite = Favorite.builder()
+        Favorite favorite = convertToFavorite(requestFavoriteDTO, user);
+        favoriteRepository.save(favorite);
+
+        return toGetFavoriteDto(favorite);
+    }
+
+    public ResponseEntity<String> deleteFavoriteById(Long id) {
+        Favorite favorite = findFavoriteById(id);
+
+        favorite.setStatus(Status.DELETED);
+        favoriteRepository.save(favorite);
+
+        return ResponseEntity.ok("Избранное успешно удалено");
+    }
+
+    private Favorite findFavoriteById(Long id){
+        return favoriteRepository.findById(id)
+                .filter(f -> f.getStatus() == Status.ACTIVE)
+                .orElseThrow(
+                        () -> new NotFoundException("Избранное с id " + id + " не найдено")
+                );
+    }
+
+    private Favorite convertToFavorite(RequestFavoriteDTO requestFavoriteDTO, User user){
+        return Favorite.builder()
                 .laptop(laptopRepository.findById(requestFavoriteDTO.getLaptopId())
                         .filter(laptop -> laptop.getStatus() == Status.ACTIVE)
                         .orElseThrow(
@@ -63,22 +82,6 @@ public class FavoriteServiceImpl implements FavoriteService {
                 .user(user)
                 .status(Status.ACTIVE)
                 .build();
-
-        favoriteRepository.save(favorite);
-        return toGetFavoriteDto(favorite);
-    }
-
-    public ResponseEntity<String> deleteFavoriteById(Long id) {
-        Favorite favorite = favoriteRepository.findById(id)
-                .filter(f -> f.getStatus() == Status.ACTIVE)
-                .orElseThrow(
-                        () -> new NotFoundException("Избранное с id " + id + " не найдено")
-                );
-
-        favorite.setStatus(Status.DELETED);
-        favoriteRepository.save(favorite);
-
-        return ResponseEntity.ok("Избранное успешно удалено");
     }
 
 }

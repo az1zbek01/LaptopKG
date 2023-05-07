@@ -12,7 +12,7 @@ public interface BrandService {
     ResponseBrandDTO getById(Long id);
     ResponseBrandDTO createBrand(RequestBrandDTO requestBrandDTO);
     ResponseBrandDTO updateBrand(Long id, RequestBrandDTO updateBrandDto);
-    ResponseBrandDTO restoreBrandById(long id);
+    ResponseBrandDTO restoreBrandById(Long id);
     ResponseEntity<String> deleteBrand(Long id);
 
 }
