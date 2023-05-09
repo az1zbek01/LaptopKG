@@ -27,7 +27,7 @@ public class ResponseLaptopDTO {
     String category;
     int guarantee;
     List<ResponseHardwareDTO> hardwareList;
-
+    String imageUrl;
     Double averageScore;
 
     public static ResponseLaptopDTO toResponseLaptopDTO(Laptop laptop){
@@ -41,6 +41,7 @@ public class ResponseLaptopDTO {
                 .category(laptop.getCategory().getCategory())
                 .guarantee(laptop.getGuarantee().getGuarantee())
                 .hardwareList(toGetHardwareDto(laptop.getHardwareList()))
+                .imageUrl(laptop.getImageUrl())
                 .averageScore(laptop.getAverageScore())
                 .build();
     }
