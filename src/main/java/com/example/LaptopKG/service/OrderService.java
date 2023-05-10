@@ -13,7 +13,7 @@ public interface OrderService {
     List<ResponseOrderDTO> getAllOrders();
     List<ResponseOrderDTO> getAllDeletedOrders();
     ResponseOrderDTO addOrder(RequestOrderDTO orderDTO, User user);
-    ResponseEntity<String> changeOrderStatus(Long id, OrderStatus orderStatus, String message);
+    ResponseEntity<String> changeOrderStatus(Long id, String orderStatus, String message);
     ResponseEntity<String> cancelOrder(Long id, User user);
     ResponseEntity<String> deleteOrder(Long id, User user);
 

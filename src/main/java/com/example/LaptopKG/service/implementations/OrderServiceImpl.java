@@ -65,14 +65,14 @@ public class OrderServiceImpl implements OrderService {
         return toResponseOrderDTO(order);
     }
 
-    public ResponseEntity<String> changeOrderStatus(Long id, OrderStatus orderStatus, String message){
+    public ResponseEntity<String> changeOrderStatus(Long id, String orderStatus, String message){
         Order order = orderRepository.findById(id)
                 .filter(o -> o.getStatus() == Status.ACTIVE)
                 .orElseThrow(
                         () -> new NotFoundException("Заказ с айди " + id + " не найден")
         );
 
-        order.setOrderStatus(orderStatus);
+        order.setOrderStatus(OrderStatus.of(orderStatus));
         orderRepository.save(order);
 
         if(message != null){

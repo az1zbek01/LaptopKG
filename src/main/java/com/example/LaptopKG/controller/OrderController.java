@@ -73,7 +73,7 @@ public class OrderController {
             summary = "Изменить статус заказа"
     )
     public ResponseEntity<String> changeOrderStatus(@PathVariable("orderId") Long id,
-                                                    @RequestParam OrderStatus orderStatus,
+                                                    @RequestParam String orderStatus,
                                                     @RequestParam(required = false) String message){
         return orderServiceImpl.changeOrderStatus(id, orderStatus, message);
     }
