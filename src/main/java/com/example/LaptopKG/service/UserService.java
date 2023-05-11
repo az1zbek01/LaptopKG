@@ -1,9 +1,9 @@
 package com.example.LaptopKG.service;
 
 import com.example.LaptopKG.dto.AuthenticationResponse;
-import com.example.LaptopKG.dto.user.AuthUserDto;
-import com.example.LaptopKG.dto.user.CreateUserDto;
+import com.example.LaptopKG.dto.user.*;
 import com.example.LaptopKG.exception.UserAlreadyExistException;
+import com.example.LaptopKG.model.User;
 import org.springframework.http.ResponseEntity;
 
 public interface UserService {
@@ -11,5 +11,5 @@ public interface UserService {
     AuthenticationResponse authenticate(AuthUserDto request);
     AuthenticationResponse refreshToken(String refreshToken);
     ResponseEntity<String> activateAccount(String token);
-
+    GetUserDto changeUserInfo(UpdateUserDto userDto, User user);
 }

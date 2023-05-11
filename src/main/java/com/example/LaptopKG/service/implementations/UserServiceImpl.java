@@ -1,8 +1,8 @@
 package com.example.LaptopKG.service.implementations;
 
-import com.example.LaptopKG.dto.user.AuthUserDto;
+import com.example.LaptopKG.dto.user.*;
 import com.example.LaptopKG.dto.AuthenticationResponse;
-import com.example.LaptopKG.dto.user.CreateUserDto;
+import com.example.LaptopKG.exception.AlreadyExistException;
 import com.example.LaptopKG.exception.TokenNotValidException;
 import com.example.LaptopKG.exception.UserAlreadyExistException;
 import com.example.LaptopKG.model.RefreshToken;
@@ -23,7 +23,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.Random;
 
@@ -39,19 +38,19 @@ public class UserServiceImpl implements UserService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     public ResponseEntity<String> register(CreateUserDto request) throws UserAlreadyExistException {
-        if(repository.existsByEmail(request.getEmail()))
+        if (repository.existsByEmail(request.getEmail()))
             throw new UserAlreadyExistException(
                     "email",
                     "Пользователь с такой почтой уже существует"
             );
-        if(repository.existsByUsername(request.getUsername()))
+        if (repository.existsByUsername(request.getUsername()))
             throw new UserAlreadyExistException(
                     "username",
                     "User with this username is already exists"
             );
         Random random = new Random();
         String token = String.valueOf(random.nextInt(100000, 999999));
-        while(repository.existsByToken(token)){
+        while (repository.existsByToken(token)) {
             token = String.valueOf(random.nextInt(100000, 999999));
         }
 
@@ -84,21 +83,21 @@ public class UserServiceImpl implements UserService {
     public AuthenticationResponse authenticate(AuthUserDto request) {
 
         authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                    request.getEmail(),
-                    request.getPassword()
-            )
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
         );
         var user = repository.findByEmail(request.getEmail())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 
-        if(refreshTokenRepository.existsByUserId(user.getId())){
+        if (refreshTokenRepository.existsByUserId(user.getId())) {
             RefreshToken refToken = refreshTokenRepository.findByUserId(user.getId());
             refToken.setToken(refreshToken);
             refreshTokenRepository.save(refToken);
-        }else{
+        } else {
             refreshTokenRepository.save(
                     RefreshToken.builder()
                             .token(refreshToken)
@@ -114,7 +113,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public AuthenticationResponse refreshToken(String refreshToken) {
-        if(!refreshTokenRepository.existsByToken(refreshToken)){
+        if (!refreshTokenRepository.existsByToken(refreshToken)) {
             throw new TokenNotValidException("Токен не валидный");
         }
 
@@ -122,7 +121,7 @@ public class UserServiceImpl implements UserService {
         userEmail = jwtService.extractUsername(refreshToken);
         var user = repository.findByEmail(userEmail).orElseThrow();
 
-        if(!jwtService.isTokenValid(refreshToken, user)){
+        if (!jwtService.isTokenValid(refreshToken, user)) {
             throw new TokenNotValidException("Токен не валидный");
         }
 
@@ -151,5 +150,22 @@ public class UserServiceImpl implements UserService {
         repository.save(activateUser);
         return ResponseEntity.ok().body("Аккаунт успешно активирован!");
 
+    }
+
+    @Override
+    public GetUserDto changeUserInfo(UpdateUserDto userDto, User user) {
+        if (!userDto.getEmail().equals(user.getEmail()) && repository.existsByEmail(userDto.getEmail())) {
+            throw new AlreadyExistException("Пользователь с такой почтой уже зарегистрирован");
+        }
+
+        user.setUsername(userDto.getUsername());
+        user.setEmail(userDto.getEmail());
+        user.setAddress(userDto.getAddress());
+        user.setPhoneNumber(userDto.getPhoneNumber());
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        repository.save(user);
+
+        return GetUserDto.getUserDto(user);
     }
 }
