@@ -47,7 +47,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     public ResponseBrandDTO createBrand(RequestBrandDTO requestBrandDTO) {
-        if(brandRepository.existsByName(requestBrandDTO.getName())){
+        if (brandRepository.existsByName(requestBrandDTO.getName())) {
             throw new AlreadyExistException("Бренд с названием " +
                     requestBrandDTO.getName() + " уже существует");
         }
@@ -68,7 +68,7 @@ public class BrandServiceImpl implements BrandService {
         return mapper.map(brand, ResponseBrandDTO.class);
     }
 
-    public ResponseBrandDTO restoreBrandById(Long id){
+    public ResponseBrandDTO restoreBrandById(Long id) {
         Brand brand = brandRepository.findById(id)
                 .filter(b -> b.getStatus() == Status.DELETED)
                 .orElseThrow(
@@ -81,7 +81,7 @@ public class BrandServiceImpl implements BrandService {
         return mapper.map(brand, ResponseBrandDTO.class);
     }
 
-    public ResponseEntity<String> deleteBrand(Long id){
+    public ResponseEntity<String> deleteBrand(Long id) {
         Brand brand = findBrandById(id);
 
         brand.setStatus(Status.DELETED);
@@ -90,7 +90,7 @@ public class BrandServiceImpl implements BrandService {
         return ResponseEntity.ok("Бренд успешно удален");
     }
 
-    private Brand findBrandById(Long id){
+    private Brand findBrandById(Long id) {
         return brandRepository.findById(id)
                 .filter(b -> b.getStatus() == Status.ACTIVE)
                 .orElseThrow(() -> new NotFoundException("Бренд с айди " + id + " не найден"));
