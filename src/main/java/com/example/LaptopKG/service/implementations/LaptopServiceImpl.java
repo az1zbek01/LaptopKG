@@ -45,6 +45,16 @@ public class LaptopServiceImpl implements LaptopService {
         return new PageImpl<>(laptopDTOS, pageable, totalSize);
     }
 
+    @Override
+    public Page<ResponseLaptopDTO> getRecommendedLaptops(Long laptopId, Pageable pageable) {
+        Laptop laptop = findLaptopById(laptopId);
+
+        Page<Laptop> laptops = laptopRepository.findAllByBrandAndStatusAndIdNot(laptop.getBrand(), Status.ACTIVE, laptopId, pageable);
+        long totalSize = laptops.getTotalElements();
+        List<ResponseLaptopDTO> laptopDTOS = toResponseLaptopDTO(laptops.toList());
+        return new PageImpl<>(laptopDTOS, pageable, totalSize);
+    }
+
     public Page<ResponseLaptopDTO> getAllLaptopsByCategory(Category category,
                                                            Pageable pageable){
         Page<Laptop> laptops = laptopRepository.findAllByCategoryAndStatus(category, Status.ACTIVE, pageable);
@@ -140,19 +150,6 @@ public class LaptopServiceImpl implements LaptopService {
         laptopRepository.save(laptop);
 
         return ResponseEntity.ok("Ноутбук успешно удален");
-    }
-
-    @Override
-    public List<ResponseLaptopDTO> getRecommendedLaptops(Long laptopId) {
-        Laptop laptop = findLaptopById(laptopId);
-
-        List<Laptop> laptops = findAllActiveLaptops()
-                .stream()
-                .filter(l -> l!= laptop)
-                .filter(l -> l.getBrand().equals(laptop.getBrand()))
-                .toList();
-
-        return toResponseLaptopDTO(laptops);
     }
 
     private List<Laptop> findAllActiveLaptops() {

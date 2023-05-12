@@ -73,8 +73,9 @@ public class LaptopController {
     @Operation(
             summary = "Получение рекомендаций по ноутбуку"
     )
-    public List<ResponseLaptopDTO> getRecommendedLaptops(@PathVariable Long laptopId){
-        return laptopServiceImpl.getRecommendedLaptops(laptopId);
+    public Page<ResponseLaptopDTO> getRecommendedLaptops(@PathVariable Long laptopId,
+                                                         @PageableDefault Pageable pageable){
+        return laptopServiceImpl.getRecommendedLaptops(laptopId, pageable);
     }
 
     @GetMapping("/search")
