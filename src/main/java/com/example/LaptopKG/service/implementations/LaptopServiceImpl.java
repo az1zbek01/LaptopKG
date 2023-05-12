@@ -58,8 +58,8 @@ public class LaptopServiceImpl implements LaptopService {
         );
     }
 
-    public List<ResponseLaptopDTO> getAllWithSearchByQuery(String query){
-        if(query != null) {
+    public List<ResponseLaptopDTO> getAllWithSearchByQuery(String query) {
+        if (query != null) {
             return toResponseLaptopDTO(laptopRepository.findAllByNameContainsIgnoreCaseOrDescriptionContainsIgnoreCase(query, query));
         }
 
@@ -83,20 +83,24 @@ public class LaptopServiceImpl implements LaptopService {
     }
 
     public ResponseLaptopDTO updateLaptop(Long id, RequestLaptopDTO updateLaptopDto) {
-        if(!laptopRepository.existsById(id)){
+        if (!laptopRepository.existsById(id)) {
             throw new LaptopNotFoundException("Ноутбук с айди " + id + " не найден");
         }
 
         Set<Hardware> hardwareSet = constructHarwareSet(updateLaptopDto);
-
+        Laptop laptopWithImage = laptopRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Ноутбук с айди " + id + " не найден")
+        );
         Laptop laptop = convertToLaptop(updateLaptopDto, hardwareSet);
         laptop.setId(id);
+        laptop.setAverageScore(laptopWithImage.getAverageScore());
+        laptop.setImageUrl(laptopWithImage.getImageUrl());
         laptopRepository.save(laptop);
 
         return toResponseLaptopDTO(laptop);
     }
 
-    public ResponseLaptopDTO restoreLaptopById(Long id){
+    public ResponseLaptopDTO restoreLaptopById(Long id) {
         Laptop laptop = laptopRepository.findById(id)
                 .filter(l -> l.getStatus() == Status.DELETED)
                 .orElseThrow(
@@ -119,6 +123,19 @@ public class LaptopServiceImpl implements LaptopService {
         return ResponseEntity.ok("Ноутбук успешно удален");
     }
 
+    @Override
+    public List<ResponseLaptopDTO> getRecommendedLaptops(Long laptopId) {
+        Laptop laptop = findLaptopById(laptopId);
+
+        List<Laptop> laptops = findAllActiveLaptops()
+                .stream()
+                .filter(l -> l!= laptop)
+                .filter(l -> l.getBrand().equals(laptop.getBrand()))
+                .toList();
+
+        return toResponseLaptopDTO(laptops);
+    }
+
     private List<Laptop> findAllActiveLaptops() {
         return laptopRepository.findAll()
                 .stream()
@@ -126,7 +143,7 @@ public class LaptopServiceImpl implements LaptopService {
                 .collect(Collectors.toList());
     }
 
-    private Laptop findLaptopById(Long id){
+    private Laptop findLaptopById(Long id) {
         return laptopRepository.findById(id)
                 .filter(l -> l.getStatus() == (Status.ACTIVE))
                 .orElseThrow(
@@ -135,7 +152,7 @@ public class LaptopServiceImpl implements LaptopService {
     }
 
     private void sendNotificationsToAllUsers(List<User> users, String brand) {
-        for(User user: users){
+        for (User user : users) {
             Notification notification = new Notification();
             notification.setUser(user);
             notification.setHeader("Добавлен новый ноутбук!");
@@ -146,9 +163,9 @@ public class LaptopServiceImpl implements LaptopService {
         }
     }
 
-    private Set<Hardware> constructHarwareSet(RequestLaptopDTO requestLaptopDTO){
+    private Set<Hardware> constructHarwareSet(RequestLaptopDTO requestLaptopDTO) {
         Set<Hardware> hardwareSet = new HashSet<>();
-        for (long hardId: requestLaptopDTO.getHardwareIds()) {
+        for (long hardId : requestLaptopDTO.getHardwareIds()) {
             hardwareSet.add(hardwareRepository.findById(hardId)
                     .orElseThrow(() -> new NotFoundException("Железо с айди " + hardId + " не было найдено"))
             );
@@ -156,7 +173,7 @@ public class LaptopServiceImpl implements LaptopService {
         return hardwareSet;
     }
 
-    private Laptop convertToLaptop(RequestLaptopDTO requestLaptopDTO, Set<Hardware> hardwareSet){
+    private Laptop convertToLaptop(RequestLaptopDTO requestLaptopDTO, Set<Hardware> hardwareSet) {
         return Laptop.builder()
                 .hardwareList(new ArrayList<>(hardwareSet))
                 .description(requestLaptopDTO.getDescription())

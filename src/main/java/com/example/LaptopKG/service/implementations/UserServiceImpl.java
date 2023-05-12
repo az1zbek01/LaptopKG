@@ -54,18 +54,8 @@ public class UserServiceImpl implements UserService {
             token = String.valueOf(random.nextInt(100000, 999999));
         }
 
-        var user = User.builder()
-                .status(Status.NOT_ACTIVATED)
-                .phoneNumber(request.getPhoneNumber())
-                .username(request.getUsername())
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .address(request.getAddress())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.ROLE_USER)
-                .token(token)
-                .build();
+        var user = buildUser(request);
+        user.setToken(token);
         repository.save(user);
 
         SimpleMailMessage activationEmail = new SimpleMailMessage();
@@ -167,5 +157,41 @@ public class UserServiceImpl implements UserService {
         repository.save(user);
 
         return GetUserDto.getUserDto(user);
+    }
+
+    @Override
+    public ResponseEntity<String> addAdmin(CreateUserDto userDto) {
+        if (repository.existsByEmail(userDto.getEmail()))
+            throw new UserAlreadyExistException(
+                    "email",
+                    "Пользователь с такой почтой уже существует"
+            );
+        if (repository.existsByUsername(userDto.getUsername()))
+            throw new UserAlreadyExistException(
+                    "username",
+                    "User with this username is already exists"
+            );
+
+        var user = buildUser(userDto);
+        user.setRole(Role.ROLE_ADMIN);
+        user.setStatus(Status.ACTIVE);
+        repository.save(user);
+
+        return ResponseEntity.ok("Администратор успешно добавлен");
+    }
+
+    private User buildUser(CreateUserDto userDto) {
+        return User.builder()
+                .phoneNumber(userDto.getPhoneNumber())
+                .username(userDto.getUsername())
+                .firstName(userDto.getFirstName())
+                .lastName(userDto.getLastName())
+                .address(userDto.getAddress())
+                .email(userDto.getEmail())
+                .password(passwordEncoder.encode(userDto.getPassword()))
+                .role(Role.ROLE_USER)
+                .status(Status.NOT_ACTIVATED)
+                .token(null)
+                .build();
     }
 }
