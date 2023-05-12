@@ -18,5 +18,5 @@ public interface LaptopService {
     ResponseLaptopDTO updateLaptop(Long id, RequestLaptopDTO updateLaptopDto);
     ResponseLaptopDTO restoreLaptopById(Long id);
     ResponseEntity<String> deleteLaptopById(Long id);
-
+    List<ResponseLaptopDTO> getRecommendedLaptops(Long laptopId);
 }
