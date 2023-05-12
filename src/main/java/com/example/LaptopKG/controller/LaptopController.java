@@ -48,6 +48,14 @@ public class LaptopController {
         return laptopServiceImpl.getAllLaptops(pageable);
     }
 
+    @GetMapping("/recommendations/{laptopId}")
+    @Operation(
+            summary = "Получение рекомендаций по ноутбуку"
+    )
+    public List<ResponseLaptopDTO> getRecommendedLaptops(@PathVariable Long laptopId){
+        return laptopServiceImpl.getRecommendedLaptops(laptopId);
+    }
+
     @GetMapping("/search")
     @Operation(
             summary = "Поиск ноутбуков по названию и описанию"

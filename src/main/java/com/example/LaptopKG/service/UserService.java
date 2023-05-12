@@ -12,4 +12,5 @@ public interface UserService {
     AuthenticationResponse refreshToken(String refreshToken);
     ResponseEntity<String> activateAccount(String token);
     GetUserDto changeUserInfo(UpdateUserDto userDto, User user);
+    ResponseEntity<String> addAdmin(CreateUserDto userDto);
 }

@@ -2,6 +2,7 @@ package com.example.LaptopKG.controller;
 
 
 import com.example.LaptopKG.dto.user.ChangeEmailDTO;
+import com.example.LaptopKG.dto.user.CreateUserDto;
 import com.example.LaptopKG.dto.user.GetUserDto;
 import com.example.LaptopKG.dto.user.UpdateUserDto;
 import com.example.LaptopKG.model.User;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +39,16 @@ public class UserController {
     public GetUserDto changeUserInfo(@RequestBody UpdateUserDto userDto,
                                                  @AuthenticationPrincipal User user){
         return userService.changeUserInfo(userDto, user);
+    }
+
+    @SecurityRequirement(name = "JWT")
+    @PostMapping("/addAdmin")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+            summary = "Добавление нового администратора"
+    )
+    public ResponseEntity<String> addAdmin(@RequestBody CreateUserDto userDto){
+        return userService.addAdmin(userDto);
     }
 
 }

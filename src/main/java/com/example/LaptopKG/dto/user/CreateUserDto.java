@@ -30,5 +30,4 @@ public class CreateUserDto {
 
     String address;
 
-
 }
