@@ -17,6 +17,7 @@ public interface LaptopRepository extends JpaRepository<Laptop, Long> {
     Page<Laptop> findAllByStatus(Status status, Pageable pageable);
     Page<Laptop> findAllByCategoryAndStatus(Category category, Status status, Pageable pageable);
     Page<Laptop> findAllByBrandAndStatus(Brand brand, Status status, Pageable pageable);
+    Page<Laptop> findAllByBrandAndStatusAndIdNot(Brand brand, Status status, Long id, Pageable pageable);
 
 
 }
