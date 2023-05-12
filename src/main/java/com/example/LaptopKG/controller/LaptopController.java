@@ -4,6 +4,9 @@ package com.example.LaptopKG.controller;
 import com.example.LaptopKG.dto.laptop.RequestLaptopDTO;
 import com.example.LaptopKG.dto.laptop.ResponseLaptopDTO;
 import com.example.LaptopKG.dto.review.ResponseReviewDTO;
+import com.example.LaptopKG.model.Brand;
+import com.example.LaptopKG.model.enums.Category;
+import com.example.LaptopKG.service.BrandService;
 import com.example.LaptopKG.service.implementations.LaptopServiceImpl;
 import com.example.LaptopKG.service.implementations.ReviewServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,6 +49,24 @@ public class LaptopController {
     )
     public Page<ResponseLaptopDTO> getAllWithPagination(@PageableDefault Pageable pageable){
         return laptopServiceImpl.getAllLaptops(pageable);
+    }
+
+    @GetMapping("/filter/byCategory")
+    @Operation(
+            summary = "Получение всех ноутбуков по категории"
+    )
+    public Page<ResponseLaptopDTO> getAllLaptopsByCategory(@RequestParam Category category,
+                                                           @PageableDefault Pageable pageable){
+        return laptopServiceImpl.getAllLaptopsByCategory(category, pageable);
+    }
+
+    @GetMapping("/filter/byBrand")
+    @Operation(
+            summary = "Получение всех ноутбуков по категории"
+    )
+    public Page<ResponseLaptopDTO> getAllLaptopsByBrand(@RequestParam String brandName,
+                                                           @PageableDefault Pageable pageable){
+        return laptopServiceImpl.getAllLaptopsByBrand(brandName, pageable);
     }
 
     @GetMapping("/recommendations/{laptopId}")

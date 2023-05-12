@@ -39,9 +39,28 @@ public class LaptopServiceImpl implements LaptopService {
     }
 
     public Page<ResponseLaptopDTO> getAllLaptops(Pageable pageable) {
-        Page<Laptop> laptops1 = laptopRepository.findAllByStatus(Status.ACTIVE, pageable);
-        long totalSize = laptops1.getTotalElements();
-        List<ResponseLaptopDTO> laptopDTOS = toResponseLaptopDTO(laptops1.toList());
+        Page<Laptop> laptops = laptopRepository.findAllByStatus(Status.ACTIVE, pageable);
+        long totalSize = laptops.getTotalElements();
+        List<ResponseLaptopDTO> laptopDTOS = toResponseLaptopDTO(laptops.toList());
+        return new PageImpl<>(laptopDTOS, pageable, totalSize);
+    }
+
+    public Page<ResponseLaptopDTO> getAllLaptopsByCategory(Category category,
+                                                           Pageable pageable){
+        Page<Laptop> laptops = laptopRepository.findAllByCategoryAndStatus(category, Status.ACTIVE, pageable);
+        long totalSize = laptops.getTotalElements();
+        List<ResponseLaptopDTO> laptopDTOS = toResponseLaptopDTO(laptops.toList());
+        return new PageImpl<>(laptopDTOS, pageable, totalSize);
+    }
+
+    public Page<ResponseLaptopDTO> getAllLaptopsByBrand(String brandName,
+                                                           Pageable pageable){
+        Brand brand = brandRepository.findByName(brandName).orElseThrow(
+                () -> new NotFoundException("Бренд с названием " + brandName + " не найден")
+        );
+        Page<Laptop> laptops = laptopRepository.findAllByBrandAndStatus(brand, Status.ACTIVE, pageable);
+        long totalSize = laptops.getTotalElements();
+        List<ResponseLaptopDTO> laptopDTOS = toResponseLaptopDTO(laptops.toList());
         return new PageImpl<>(laptopDTOS, pageable, totalSize);
     }
 
