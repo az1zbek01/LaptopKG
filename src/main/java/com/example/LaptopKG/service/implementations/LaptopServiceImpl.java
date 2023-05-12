@@ -88,9 +88,11 @@ public class LaptopServiceImpl implements LaptopService {
         }
 
         Set<Hardware> hardwareSet = constructHarwareSet(updateLaptopDto);
-
+        Laptop laptopWithImage = laptopRepository.findById(id).orElseThrow();
         Laptop laptop = convertToLaptop(updateLaptopDto, hardwareSet);
         laptop.setId(id);
+        laptop.setAverageScore(laptopWithImage.getAverageScore());
+        laptop.setImageUrl(laptop.getImageUrl());
         laptopRepository.save(laptop);
 
         return toResponseLaptopDTO(laptop);
