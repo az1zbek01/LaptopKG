@@ -62,6 +62,53 @@ public class LaptopServiceImpl implements LaptopService {
         List<ResponseLaptopDTO> laptopDTOS = toResponseLaptopDTO(laptops.toList());
         return new PageImpl<>(laptopDTOS, pageable, totalSize);
     }
+    public Page<ResponseLaptopDTO> getAllLaptopsByCategoryAndBrand(String brandName, String category1,
+                                                      Pageable pageable
+
+    ){
+
+
+
+        Page<Laptop> laptops;
+
+        if(brandName.equals("all") && category1.equals("all")){
+            laptops = laptopRepository.findAllByStatus(Status.ACTIVE, pageable);
+        }
+        else if(!category1.equals("all") && !brandName.equals("all")){
+            Brand brand = brandRepository.findByName(brandName).orElseThrow();
+            Category category = Category.of(category1);
+            laptops =
+                    laptopRepository
+                            .findAllByStatusAndBrandAndCategory(
+                                    Status.ACTIVE, brand,
+                                    category,
+                                    pageable);
+        }
+        else if(category1.equals("all") ){
+            Brand brand = brandRepository.findByName(brandName).orElseThrow();
+            laptops =
+                    laptopRepository
+                            .findAllByStatusAndBrand(
+                                    Status.ACTIVE, brand,
+
+                                    pageable);
+        }
+        else {
+
+            Category category = Category.of(category1);
+
+            laptops =
+                    laptopRepository
+                            .findAllByStatusAndCategory(
+                                    Status.ACTIVE,
+                                    category,
+                                    pageable);
+        }
+
+        long totalSize = laptops.getTotalElements();
+        List<ResponseLaptopDTO> laptopDTOS = toResponseLaptopDTO(laptops.toList());
+        return new PageImpl<>(laptopDTOS, pageable, totalSize);
+    }
 
     public Page<ResponseLaptopDTO> getAllLaptopsByBrand(String brandName,
                                                            Pageable pageable){
