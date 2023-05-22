@@ -22,35 +22,25 @@ import java.util.Objects;
 @Table(name = "_user")
 @Getter
 @Setter
-@ToString
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PUBLIC)
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User extends BaseEntity implements UserDetails {
-
     @Column(name = "username", unique = true)
-    @NotBlank(message = "Name is mandatory")
     String username;
 
     @Column(name = "email", unique = true)
     String email;
 
-    @NotBlank(message = "Password is mandatory")
-    @Column(name = "pass")
     String password;
 
-    @Column(name = "address")
     String address;
 
-    @Column(name = "phone_number")
     String phoneNumber;
-    //TODO check is working
 
-    @Column(name = "first_name")
     String firstName;
 
-    @Column(name = "last_name")
     String lastName;
 
     @Enumerated(EnumType.STRING)
@@ -59,9 +49,9 @@ public class User extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     Status status;
 
-    @OneToOne
-    @JoinColumn(name = "avatar_id")
-    Image avatar;
+    String imageUrl;
+
+    String token;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -100,7 +90,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return status != Status.DELETED;
+        return status == Status.ACTIVE;
     }
 
     @Override

@@ -3,6 +3,8 @@ package com.example.LaptopKG.model.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.stream.Stream;
+
 @RequiredArgsConstructor
 @Getter
 public enum Guarantee {
@@ -11,4 +13,10 @@ public enum Guarantee {
 
     private final int guarantee;
 
+    public static Guarantee of(int guarantee) {
+        return Stream.of(Guarantee.values())
+                .filter(p -> p.getGuarantee() == guarantee)
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
 }

@@ -6,6 +6,7 @@ import MyNavbar from './components/UI/Navbar/MyNavbar';
 function App() {
 
     return (
+        
         <BrowserRouter>
         <MyNavbar/>
         <AppRouter/>

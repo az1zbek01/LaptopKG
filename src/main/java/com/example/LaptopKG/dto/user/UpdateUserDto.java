@@ -1,7 +1,7 @@
 package com.example.LaptopKG.dto.user;
 
 
-import com.example.LaptopKG.model.Image;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,13 +11,12 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateUserDto {
-
     String username;
+    @Email(message = "Почта некорректна")
     String email;
     String address;
     String phoneNumber;
     String firstName;
     String lastName;
-    Image avatar;
 
 }

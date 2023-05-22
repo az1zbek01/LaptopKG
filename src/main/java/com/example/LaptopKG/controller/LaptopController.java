@@ -1,11 +1,19 @@
 package com.example.LaptopKG.controller;
 
 
-import com.example.LaptopKG.dto.laptop.CreateLaptopDto;
-import com.example.LaptopKG.dto.laptop.GetLaptopDto;
-import com.example.LaptopKG.dto.laptop.UpdateLaptopDto;
-import com.example.LaptopKG.service.LaptopService;
-import lombok.RequiredArgsConstructor;
+import com.example.LaptopKG.dto.laptop.RequestLaptopDTO;
+import com.example.LaptopKG.dto.laptop.ResponseLaptopDTO;
+import com.example.LaptopKG.dto.review.ResponseReviewDTO;
+import com.example.LaptopKG.model.enums.Category;
+import com.example.LaptopKG.service.implementations.LaptopServiceImpl;
+import com.example.LaptopKG.service.implementations.ReviewServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -13,40 +21,145 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-//TODO: Create getall getById //create update delete
 @RestController
 @RequestMapping("/api/laptops")
-@RequiredArgsConstructor
+@AllArgsConstructor
+@CrossOrigin(origins = "*")
+@Tag(
+    name = "Контроллер для работы с ноутбуками",
+    description = "В этом контроллеры есть возможности добавления, получения, обновления и удаления ноутбуков"
+)
 public class LaptopController {
-
-    private final LaptopService laptopService;
+    private final LaptopServiceImpl laptopServiceImpl;
+    private final ReviewServiceImpl reviewServiceImpl;
 
     @GetMapping
-    public ResponseEntity<List<GetLaptopDto>> getAll(){
-        return ResponseEntity.ok(laptopService.getLaptops());
+    @Operation(
+            summary = "Получение всех ноутбуков"
+    )
+    public List<ResponseLaptopDTO> getAllLaptops(){
+        return laptopServiceImpl.getAllLaptops();
+    }
+
+    @GetMapping("/byPages")
+    @Operation(
+            summary = "Получение всех ноутбуков с пагинацией"
+    )
+    public Page<ResponseLaptopDTO> getAllWithPagination(@PageableDefault Pageable pageable){
+        return laptopServiceImpl.getAllLaptops(pageable);
+    }
+
+    @GetMapping("/filter/byCategory")
+    @Operation(
+            summary = "Получение всех ноутбуков по категории"
+    )
+    public Page<ResponseLaptopDTO> getAllLaptopsByCategory(@RequestParam Category category,
+                                                           @PageableDefault Pageable pageable){
+        return laptopServiceImpl.getAllLaptopsByCategory(category, pageable);
+    }
+
+    @GetMapping("/filter")
+    @Operation(
+            summary = "Получение всех ноутбуков по всем параметрам"
+    )
+    public Page<ResponseLaptopDTO> getAllWithFilter(@RequestParam(required = false) String category,
+                                                    @RequestParam(required = false) String brandName,
+                                                    @PageableDefault Pageable pageable
+    ){
+        return laptopServiceImpl.getAllLaptopsByCategoryAndBrand(brandName, category, pageable);
+    }
+
+    @GetMapping("/filter/byBrand")
+    @Operation(
+            summary = "Получение всех ноутбуков по категории"
+    )
+    public Page<ResponseLaptopDTO> getAllLaptopsByBrand(@RequestParam String brandName,
+                                                           @PageableDefault Pageable pageable){
+        return laptopServiceImpl.getAllLaptopsByBrand(brandName, pageable);
+    }
+
+    @GetMapping("/recommendations/{laptopId}")
+    @Operation(
+            summary = "Получение рекомендаций по ноутбуку"
+    )
+    public Page<ResponseLaptopDTO> getRecommendedLaptops(@PathVariable Long laptopId,
+                                                         @PageableDefault Pageable pageable){
+        return laptopServiceImpl.getRecommendedLaptops(laptopId, pageable);
+    }
+
+    @GetMapping("/search")
+    @Operation(
+            summary = "Поиск ноутбуков по названию и описанию"
+    )
+    public List<ResponseLaptopDTO> getAllWithSearchByQuery(@RequestParam(required = false) String query){
+        return laptopServiceImpl.getAllWithSearchByQuery(query);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetLaptopDto> getById(@PathVariable Long id){
-        return ResponseEntity.ok(laptopService.getLaptopById(id));
+    @Operation(
+            summary = "Получение ноутбука по айди"
+    )
+    public ResponseLaptopDTO getById(@PathVariable Long id){
+        return laptopServiceImpl.getLaptopById(id);
+    }
+
+    @GetMapping("/{id}/reviews")
+    @Operation(
+            summary = "Получение всех отзывов на ноутбук"
+    )
+    public List<ResponseReviewDTO> getReviewsByLaptopId(@PathVariable Long id){
+        return reviewServiceImpl.getReviewsByLaptopId(id);
+    }
+
+    @GetMapping("/deleted")
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+            summary = "Получение всех удаленных ноутбуков"
+    )
+    public List<ResponseLaptopDTO> getAllDeletedLaptops(){
+        return laptopServiceImpl.getAllDeletedLaptops();
     }
 
     @PostMapping("/create")
+    @SecurityRequirement(name = "JWT")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> createLaptop(@RequestBody CreateLaptopDto createLaptopDto){
-        return ResponseEntity.ok(laptopService.createLaptop(createLaptopDto));
+    @Operation(
+            summary = "Добавление ноутбука"
+    )
+    public ResponseLaptopDTO createLaptop(@RequestBody RequestLaptopDTO requestLaptopDTO){
+        return laptopServiceImpl.createLaptop(requestLaptopDTO);
     }
 
-    @PostMapping("/{id}/update")
+    @PutMapping("/{id}")
+    @SecurityRequirement(name = "JWT")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> updateLaptop(@PathVariable Long id, @RequestBody UpdateLaptopDto updateLaptopDto){
-        return ResponseEntity.ok(laptopService.updateLaptop(id, updateLaptopDto));
+    @Operation(
+            summary = "Обновление ноутбука по айди"
+    )
+    public ResponseLaptopDTO updateLaptop(@PathVariable Long id,
+                                          @RequestBody RequestLaptopDTO updateLaptopDto){
+        return laptopServiceImpl.updateLaptop(id, updateLaptopDto);
     }
 
-    @PostMapping("/{id}/delete")
+    @PutMapping("/restore/{id}")
+    @SecurityRequirement(name = "JWT")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> deleteLaptop(@PathVariable Long id){
-        return ResponseEntity.ok(laptopService.deleteLaptop(id));
+    @Operation(
+            summary = "Восстановление ноутбука по айди"
+    )
+    public ResponseLaptopDTO restoreLaptopById(@PathVariable Long id){
+        return laptopServiceImpl.restoreLaptopById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+            summary = "Удаление ноутбука"
+    )
+    public ResponseEntity<String> deleteLaptopById(@PathVariable Long id){
+        return laptopServiceImpl.deleteLaptopById(id);
     }
 
 }

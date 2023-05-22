@@ -1,7 +1,7 @@
 package com.example.LaptopKG.dto.user;
 
-import com.example.LaptopKG.model.Image;
 import com.example.LaptopKG.model.User;
+import com.example.LaptopKG.model.enums.Role;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,17 +12,16 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GetUserDto {
-
-
     String username;
     String email;
     String address;
     String phoneNumber;
     String firstName;
     String lastName;
-    Image avatar;
+    String imageUrl;
+    Role role;
 
-    public GetUserDto getUserDto(User user){
+    public static GetUserDto getUserDto(User user){
         return GetUserDto.builder()
                 .username(user.getRealUsername())
                 .email(user.getEmail())
@@ -30,7 +29,8 @@ public class GetUserDto {
                 .phoneNumber(user.getPhoneNumber())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                .avatar(user.getAvatar())
+                .imageUrl(user.getImageUrl())
+                .role(user.getRole())
                 .build();
     }
 

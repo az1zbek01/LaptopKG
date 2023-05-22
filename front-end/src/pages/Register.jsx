@@ -60,7 +60,6 @@ const Register = () => {
       type: "text",
       label: "First name",
       required: false,
-      pattern: "",
     },
     {
       id: "lastName",
